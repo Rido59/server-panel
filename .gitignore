@@ -1,0 +1,5 @@
+node_modules/
+panel-config.json
+.system_generated/
+*.log
+.DS_Store

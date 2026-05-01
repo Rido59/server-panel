@@ -1,0 +1,5 @@
+{
+    "adminUser": "admin",
+    "adminPass": "admin",
+    "jwtSecret": "serverpanel-secret-2024"
+}

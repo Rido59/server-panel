@@ -1,0 +1,3245 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServerPanel Pro v3.0</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg: #030816;
+      --bg2: rgba(13, 25, 41, 0.7);
+      --bg3: rgba(16, 32, 56, 0.6);
+      --bg4: rgba(20, 44, 80, 0.5);
+      --border: rgba(0, 204, 255, 0.15);
+      --border2: rgba(0, 204, 255, 0.25);
+      --border3: rgba(0, 204, 255, 0.4);
+      --glass: rgba(10, 20, 40, 0.6);
+      --glass-blur: blur(12px);
+      --text: #e0f2fe;
+      --text2: #bae6fd;
+      --text3: #7dd3fc;
+      --text4: #38bdf8;
+      --blue: #00ccff;
+      --green: #00ff88;
+      --red: #ff3366;
+      --yellow: #ffcc00;
+      --purple: #bf55ff;
+      --r8: 10px;
+      --grad: linear-gradient(135deg, var(--blue), var(--green));
+    }
+
+    .light {
+      --bg: #e0f5ff;
+      --bg2: #f0faff;
+      --bg3: #d8eef8;
+      --bg4: #c0e0f0;
+      --bg5: #a0cce0;
+      --border: #80b8d0;
+      --border2: #60a0c0;
+      --border3: #4090b0;
+      --text: #001830;
+      --text2: #002848;
+      --text3: #004070;
+      --text4: #206090;
+      --blue: #0050aa;
+      --blue-bg: rgba(0, 80, 170, .08);
+      --blue-border: rgba(0, 80, 170, .3);
+      --green: #006030;
+      --green-bg: rgba(0, 96, 48, .08);
+      --green-border: rgba(0, 96, 48, .3);
+      --red: #aa0030;
+      --red-bg: rgba(170, 0, 48, .07);
+      --red-border: rgba(170, 0, 48, .28);
+      --yellow: #806000;
+      --yellow-bg: rgba(128, 96, 0, .07);
+      --yellow-border: rgba(128, 96, 0, .25);
+      --purple: #5500aa;
+      --purple-bg: rgba(85, 0, 170, .07);
+      --purple-border: rgba(85, 0, 170, .28);
+      --teal: #007060;
+      --orange: #a03000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    /* ═══ BODY + SCANLINES ═══ */
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      transition: background .3s, color .3s;
+    }
+
+    /* CRT scanlines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(0deg,
+          transparent, transparent 1px,
+          rgba(0, 0, 0, .18) 1px, rgba(0, 0, 0, .18) 2px);
+    }
+
+    /* Vignette */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .7) 100%);
+    }
+
+    .mono {
+      font-family: 'Share Tech Mono', monospace
+    }
+
+    .orb {
+      font-family: 'Orbitron', sans-serif
+    }
+
+    /* ═══ LAYOUT ═══ */
+    .app {
+      display: flex;
+      height: 100vh;
+      width: 100vw
+    }
+
+    /* ═══ SIDEBAR ═══ */
+    .sb {
+      width: 60px;
+      background: linear-gradient(180deg, #000 0%, #010d18 50%, #000 100%);
+      border-right: 1px solid var(--border2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      gap: 2px;
+      z-index: 100;
+      transition: width .25s cubic-bezier(.4, 0, .2, 1);
+      overflow: hidden;
+      box-shadow: 4px 0 30px rgba(0, 204, 255, .08);
+      position: relative;
+    }
+
+    .sb::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, transparent 0%, var(--blue) 20%, var(--green) 50%, var(--blue) 80%, transparent 100%);
+      animation: sbLine 4s linear infinite;
+      opacity: .4;
+    }
+
+    @keyframes sbLine {
+      0% {
+        background-position: 0 -200%
+      }
+
+      100% {
+        background-position: 0 200%
+      }
+    }
+
+    .sb.exp {
+      width: 220px;
+      align-items: stretch;
+      padding: 10px 8px
+    }
+
+    .sb-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      background: rgba(0, 204, 255, .05);
+      border: 1px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--blue);
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 204, 255, .3), inset 0 0 20px rgba(0, 204, 255, .05);
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    .sb-logo::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(transparent 0deg, rgba(0, 204, 255, .08) 60deg, transparent 120deg);
+      animation: logoSpin 6s linear infinite;
+    }
+
+    @keyframes logoSpin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes logoPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(0, 204, 255, .3), inset 0 0 20px rgba(0, 204, 255, .05)
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(0, 204, 255, .5), inset 0 0 30px rgba(0, 204, 255, .1)
+      }
+    }
+
+    .sb.exp .sb-logo {
+      width: 100%;
+      height: 44px;
+      border-radius: 6px;
+      justify-content: flex-start;
+      padding: 0 12px;
+      gap: 10px
+    }
+
+    .logo-texts {
+      display: none;
+      line-height: 1.3
+    }
+
+    .sb.exp .logo-texts {
+      display: block
+    }
+
+    .logo-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px var(--blue)
+    }
+
+    .logo-ver {
+      font-size: 9px;
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 1px;
+      text-shadow: 0 0 6px var(--green)
+    }
+
+    .sb-divider {
+      width: 36px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border3), transparent);
+      margin: 4px auto;
+      flex-shrink: 0
+    }
+
+    .sb.exp .sb-divider {
+      width: 100%
+    }
+
+    .sb-section-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      font-weight: 500;
+      color: var(--text4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: none;
+      padding: 6px 8px 2px
+    }
+
+    .sb.exp .sb-section-label {
+      display: block
+    }
+
+    .ni {
+      width: 40px;
+      height: 38px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text3);
+      transition: all .15s;
+      position: relative;
+      user-select: none;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .ni:hover {
+      background: rgba(0, 204, 255, .08);
+      color: var(--blue);
+      box-shadow: 0 0 12px rgba(0, 204, 255, .15), inset 0 0 8px rgba(0, 204, 255, .06);
+    }
+
+    .ni.act {
+      background: rgba(0, 255, 136, .07);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 136, .3);
+      box-shadow: 0 0 16px rgba(0, 255, 136, .2), inset 0 0 12px rgba(0, 255, 136, .05);
+    }
+
+    .ni.act::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 22px;
+      background: linear-gradient(180deg, transparent, var(--green), transparent);
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 8px var(--green), 0 0 16px rgba(0, 255, 136, .4);
+    }
+
+    .sb.exp .ni.act::before {
+      display: none
+    }
+
+    .sb.exp .ni {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 0 10px;
+      gap: 10px;
+      height: 36px
+    }
+
+    .ni-ico {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .ni-lbl {
+      display: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .5px
+    }
+
+    .sb.exp .ni-lbl {
+      display: block
+    }
+
+    .ni-badge {
+      display: none;
+      margin-left: auto;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 2px;
+      letter-spacing: .5px;
+      font-family: 'Orbitron', sans-serif
+    }
+
+    .ni-badge.r {
+      background: rgba(255, 26, 94, .15);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+      box-shadow: 0 0 6px rgba(255, 26, 94, .2)
+    }
+
+    .ni-badge.y {
+      background: rgba(255, 204, 0, .1);
+      color: var(--yellow);
+      border: 1px solid var(--yellow-border)
+    }
+
+    .ni-badge.g {
+      background: rgba(0, 255, 136, .08);
+      color: var(--green);
+      border: 1px solid var(--green-border)
+    }
+
+    .sb.exp .ni-badge {
+      display: inline-flex;
+      align-items: center
+    }
+
+    .sb-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      width: 100%;
+      border-top: 1px solid var(--border2);
+      padding-top: 8px
+    }
+
+    .sb.exp .sb-bottom {
+      align-items: stretch
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      cursor: pointer;
+      border-radius: 4px
+    }
+
+    .user-chip:hover {
+      background: rgba(0, 204, 255, .05)
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 3px;
+      background: rgba(0, 204, 255, .08);
+      border: 1px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--blue);
+      flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(0, 204, 255, .25), inset 0 0 8px rgba(0, 204, 255, .04);
+    }
+
+    .user-info {
+      display: none;
+      line-height: 1.3
+    }
+
+    .sb.exp .user-info {
+      display: block
+    }
+
+    .user-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace
+    }
+
+    .user-role {
+      font-size: 9px;
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      text-shadow: 0 0 6px rgba(0, 255, 136, .4)
+    }
+
+    /* ═══ MAIN ═══ */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0
+    }
+
+    /* ═══ TOPBAR ═══ */
+    .topbar {
+      height: 50px;
+      min-height: 50px;
+      background: rgba(0, 5, 12, .97);
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 10px;
+      box-shadow: 0 2px 30px rgba(0, 0, 0, .6), 0 1px 0 rgba(0, 204, 255, .1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .topbar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 204, 255, .4), rgba(0, 255, 136, .3), rgba(0, 204, 255, .4), transparent);
+      animation: topbarGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes topbarGlow {
+
+      0%,
+      100% {
+        opacity: .5
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    .tb-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      flex: 1;
+      white-space: nowrap;
+      color: var(--blue);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 0 16px rgba(0, 204, 255, .6), 0 0 30px rgba(0, 204, 255, .3);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 204, 255, .04);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 6px 11px;
+      width: 210px;
+      transition: all .2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 14px rgba(0, 204, 255, .2), inset 0 0 8px rgba(0, 204, 255, .04);
+    }
+
+    .search-box input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 11px;
+      font-family: 'Share Tech Mono', monospace;
+      width: 100%
+    }
+
+    .search-box input::placeholder {
+      color: var(--text4)
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      background: rgba(0, 255, 136, .06);
+      border: 1px solid rgba(0, 255, 136, .3);
+      font-size: 9px;
+      color: var(--green);
+      white-space: nowrap;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .5px;
+      box-shadow: 0 0 10px rgba(0, 255, 136, .1), inset 0 0 6px rgba(0, 255, 136, .03);
+    }
+
+    .pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 8px var(--green), 0 0 14px rgba(0, 255, 136, .4);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .4;
+        transform: scale(.7)
+      }
+    }
+
+    .tb-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 3px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--text3);
+      transition: all .15s;
+      position: relative;
+    }
+
+    .tb-btn:hover {
+      background: rgba(0, 204, 255, .07);
+      color: var(--blue);
+      border-color: var(--blue-border);
+      box-shadow: 0 0 12px rgba(0, 204, 255, .2), inset 0 0 8px rgba(0, 204, 255, .04);
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 8px var(--red), 0 0 14px rgba(255, 26, 94, .4)
+    }
+
+    /* ═══ CONTENT ═══ */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      background: var(--bg)
+    }
+
+    .content::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--border3);
+      border-radius: 1px
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    /* ═══ PAGE ANIM ═══ */
+    .page {
+      animation: pgFade .2s ease
+    }
+
+    @keyframes pgFade {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ═══ CARDS ═══ */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .4), inset 0 0 40px rgba(0, 204, 255, .01);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 204, 255, .5), rgba(0, 255, 136, .3), rgba(0, 204, 255, .5), transparent);
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(225deg, rgba(0, 204, 255, .05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-h {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(0, 204, 255, .02);
+    }
+
+    .card-t {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      color: var(--blue);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(0, 204, 255, .4);
+    }
+
+    .card-b {
+      padding: 16px
+    }
+
+    /* ═══ GRIDS ═══ */
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .g3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .g4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    /* ═══ STAT CARDS ═══ */
+    .sc {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .3);
+      transition: box-shadow .2s;
+    }
+
+    .sc:hover {
+      box-shadow: 0 4px 30px rgba(0, 204, 255, .1)
+    }
+
+    .sc::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border3), transparent)
+    }
+
+    .sc-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px
+    }
+
+    .sc-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sc-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .sc-trend {
+      font-size: 10px;
+      color: var(--text4);
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .3px
+    }
+
+    .sc-trend.up {
+      color: var(--green);
+      text-shadow: 0 0 6px rgba(0, 255, 136, .4)
+    }
+
+    .sc-trend.dn {
+      color: var(--red);
+      text-shadow: 0 0 6px rgba(255, 26, 94, .4)
+    }
+
+    /* ═══ SPARK ═══ */
+    .spark {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 28px;
+      margin-top: 6px
+    }
+
+    .spk {
+      border-radius: 1px;
+      transition: height .4s ease
+    }
+
+    /* ═══ PROGRESS ═══ */
+    .pb {
+      height: 4px;
+      background: rgba(0, 0, 0, .5);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-top: 4px;
+      border: 1px solid var(--border)
+    }
+
+    .pb-f {
+      height: 100%;
+      border-radius: 1px;
+      transition: width .9s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    /* ═══ RING ═══ */
+    .ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px
+    }
+
+    .ring-label {
+      font-size: 9px;
+      color: var(--text3);
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .5px
+    }
+
+    /* ═══ BADGES ═══ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .badge.ok {
+      background: rgba(0, 255, 136, .08);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+      box-shadow: 0 0 6px rgba(0, 255, 136, .1)
+    }
+
+    .badge.err {
+      background: rgba(255, 26, 94, .08);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+      box-shadow: 0 0 6px rgba(255, 26, 94, .1)
+    }
+
+    .badge.warn {
+      background: rgba(255, 204, 0, .07);
+      color: var(--yellow);
+      border: 1px solid var(--yellow-border)
+    }
+
+    .badge.info {
+      background: rgba(0, 204, 255, .07);
+      color: var(--blue);
+      border: 1px solid var(--blue-border);
+      box-shadow: 0 0 6px rgba(0, 204, 255, .1)
+    }
+
+    .badge.off {
+      background: rgba(0, 0, 0, .4);
+      color: var(--text4);
+      border: 1px solid var(--border2)
+    }
+
+    .badge.pur {
+      background: rgba(191, 85, 255, .08);
+      color: var(--purple);
+      border: 1px solid var(--purple-border);
+      box-shadow: 0 0 6px rgba(191, 85, 255, .1)
+    }
+
+    /* ═══ BUTTONS ═══ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: rgba(0, 0, 0, .5);
+      color: var(--text2);
+      transition: all .15s;
+      font-family: 'Exo 2', sans-serif;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .btn:hover {
+      background: rgba(0, 204, 255, .08);
+      color: var(--blue);
+      border-color: var(--blue-border);
+      box-shadow: 0 0 14px rgba(0, 204, 255, .15), inset 0 0 8px rgba(0, 204, 255, .04);
+    }
+
+    .btn.p {
+      background: rgba(0, 204, 255, .1);
+      border: 1px solid var(--blue);
+      color: var(--blue);
+      box-shadow: 0 0 12px rgba(0, 204, 255, .15), inset 0 0 8px rgba(0, 204, 255, .04);
+      text-shadow: 0 0 8px rgba(0, 204, 255, .4);
+    }
+
+    .btn.p:hover {
+      background: rgba(0, 204, 255, .2);
+      box-shadow: 0 0 20px rgba(0, 204, 255, .3)
+    }
+
+    .btn.s {
+      background: rgba(0, 255, 136, .08);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+      text-shadow: 0 0 6px rgba(0, 255, 136, .3)
+    }
+
+    .btn.s:hover {
+      background: rgba(0, 255, 136, .16);
+      box-shadow: 0 0 14px rgba(0, 255, 136, .2)
+    }
+
+    .btn.d {
+      background: rgba(255, 26, 94, .08);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+      text-shadow: 0 0 6px rgba(255, 26, 94, .3)
+    }
+
+    .btn.d:hover {
+      background: rgba(255, 26, 94, .16);
+      box-shadow: 0 0 14px rgba(255, 26, 94, .2)
+    }
+
+    .btn.y {
+      background: rgba(255, 204, 0, .07);
+      border: 1px solid var(--yellow-border);
+      color: var(--yellow)
+    }
+
+    .btn.sm {
+      padding: 3px 8px;
+      font-size: 9px
+    }
+
+    .btn.lg {
+      padding: 7px 16px;
+      font-size: 11px
+    }
+
+    .btn:disabled {
+      opacity: .3;
+      cursor: not-allowed
+    }
+
+    /* ═══ TABLES ═══ */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px
+    }
+
+    .tbl th {
+      text-align: left;
+      padding: 8px 11px;
+      color: var(--text4);
+      font-weight: 700;
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .tbl td {
+      padding: 9px 11px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      vertical-align: middle;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 12px
+    }
+
+    .tbl tr:last-child td {
+      border: none
+    }
+
+    .tbl tr:hover td {
+      background: rgba(0, 204, 255, .04);
+      color: var(--text)
+    }
+
+    /* ═══ TOGGLE ═══ */
+    .tg {
+      width: 38px;
+      height: 20px;
+      background: rgba(0, 0, 0, .5);
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+
+    .tg.on {
+      background: rgba(0, 255, 136, .1);
+      border-color: var(--green);
+      box-shadow: 0 0 10px rgba(0, 255, 136, .25), inset 0 0 6px rgba(0, 255, 136, .06);
+    }
+
+    .tg::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 12px;
+      height: 12px;
+      background: var(--text3);
+      border-radius: 1px;
+      transition: transform .2s;
+    }
+
+    .tg.on::after {
+      transform: translateX(18px);
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green), 0 0 12px rgba(0, 255, 136, .4)
+    }
+
+    /* ═══ PAGE HEADER ═══ */
+    .ph {
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .ph-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 3px;
+      color: var(--text);
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(0, 255, 136, .2), 0 0 60px rgba(0, 204, 255, .1);
+      animation: titleGlitch 10s infinite;
+    }
+
+    @keyframes titleGlitch {
+
+      0%,
+      88%,
+      100% {
+        text-shadow: 0 0 30px rgba(0, 255, 136, .2), 0 0 60px rgba(0, 204, 255, .1)
+      }
+
+      90% {
+        text-shadow: 3px 0 var(--red), -3px 0 var(--blue), 0 0 30px rgba(0, 255, 136, .2)
+      }
+
+      92% {
+        text-shadow: -2px 0 var(--blue), 2px 0 var(--green)
+      }
+
+      94% {
+        text-shadow: 2px 0 var(--purple), -2px 0 var(--yellow)
+      }
+
+      96% {
+        text-shadow: 0 0 30px rgba(0, 255, 136, .2)
+      }
+    }
+
+    .ph-sub {
+      font-size: 11px;
+      color: var(--text3);
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .5px
+    }
+
+    /* ═══ ALERTS ═══ */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 3px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .alert.d {
+      background: rgba(255, 26, 94, .06);
+      border: 1px solid var(--red-border);
+      border-left: 2px solid var(--red);
+      color: var(--red);
+      box-shadow: 0 0 20px rgba(255, 26, 94, .08), inset 0 0 20px rgba(255, 26, 94, .03);
+    }
+
+    .alert.w {
+      background: rgba(255, 204, 0, .05);
+      border: 1px solid var(--yellow-border);
+      border-left: 2px solid var(--yellow);
+      color: var(--yellow);
+    }
+
+    .alert.i {
+      background: rgba(0, 204, 255, .05);
+      border: 1px solid var(--blue-border);
+      border-left: 2px solid var(--blue);
+      color: var(--blue);
+    }
+
+    .alert.s {
+      background: rgba(0, 255, 136, .05);
+      border: 1px solid var(--green-border);
+      border-left: 2px solid var(--green);
+      color: var(--green);
+      box-shadow: 0 0 20px rgba(0, 255, 136, .07);
+    }
+
+    /* ═══ TABS ═══ */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border2);
+      margin-bottom: 14px
+    }
+
+    .tab {
+      padding: 8px 14px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text4);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .15s;
+      white-space: nowrap;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .tab:hover {
+      color: var(--text2)
+    }
+
+    .tab.a {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      text-shadow: 0 0 12px rgba(0, 204, 255, .6);
+    }
+
+    /* ═══ TERMINAL ═══ */
+    .term {
+      background: #000;
+      border-radius: 3px;
+      padding: 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      line-height: 1.65;
+      height: 360px;
+      overflow-y: auto;
+      color: #00ff88;
+      border: 1px solid var(--border2);
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, .8), 0 0 20px rgba(0, 255, 136, .05);
+    }
+
+    .term::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .term::-webkit-scrollbar-thumb {
+      background: var(--border3)
+    }
+
+    .t-in {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px
+    }
+
+    .t-in input {
+      background: none;
+      border: none;
+      outline: none;
+      color: #00ff88;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      flex: 1;
+      caret-color: #00ff88;
+    }
+
+    /* ═══ FILE TREE ═══ */
+    .ft-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text3);
+      transition: all .1s;
+      user-select: none;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .ft-row:hover {
+      background: rgba(0, 204, 255, .06);
+      color: var(--blue)
+    }
+
+    .ft-row.sel {
+      background: rgba(0, 255, 136, .06);
+      color: var(--green);
+      border-left: 2px solid var(--green);
+      box-shadow: inset 0 0 8px rgba(0, 255, 136, .04);
+    }
+
+    /* ═══ INPUT ═══ */
+    .inp {
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 7px 11px;
+      font-size: 12px;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      outline: none;
+      width: 100%;
+      transition: all .15s;
+    }
+
+    .inp:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 12px rgba(0, 204, 255, .15), inset 0 0 6px rgba(0, 204, 255, .03);
+    }
+
+    select.inp {
+      cursor: pointer
+    }
+
+    textarea.inp {
+      resize: vertical;
+      line-height: 1.6
+    }
+
+    .mini-chart {
+      width: 100%;
+      display: block
+    }
+
+    /* ═══ NOTIF PANEL ═══ */
+    .notif-panel {
+      position: fixed;
+      top: 54px;
+      right: 16px;
+      width: 300px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      z-index: 1000;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .7), 0 0 30px rgba(0, 204, 255, .06);
+      display: none;
+    }
+
+    .notif-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent)
+    }
+
+    .notif-panel.open {
+      display: block;
+      animation: pgFade .15s ease
+    }
+
+    .notif-item {
+      display: flex;
+      gap: 10px;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      cursor: pointer;
+      transition: background .1s;
+      font-family: 'Exo 2', sans-serif
+    }
+
+    .notif-item:hover {
+      background: rgba(0, 204, 255, .04)
+    }
+
+    .notif-item:last-child {
+      border: none
+    }
+
+    .notif-dot-i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px
+    }
+
+    /* ═══ SETTINGS PANEL ═══ */
+    .settings-panel {
+      position: fixed;
+      top: 54px;
+      right: 16px;
+      width: 280px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      z-index: 1000;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .7);
+      display: none;
+      padding: 14px;
+    }
+
+    .settings-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent)
+    }
+
+    .settings-panel.open {
+      display: block;
+      animation: pgFade .15s ease
+    }
+
+    .set-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-family: 'Exo 2', sans-serif
+    }
+
+    .set-row:last-child {
+      border: none
+    }
+
+    /* ═══ MODAL ═══ */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-bg.open {
+      display: flex;
+      animation: pgFade .15s ease
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 20px;
+      width: 440px;
+      max-width: 95vw;
+      box-shadow: 0 16px 60px rgba(0, 0, 0, .9), 0 0 40px rgba(0, 204, 255, .07);
+      position: relative;
+    }
+
+    .modal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue), var(--green), var(--blue), transparent)
+    }
+
+    .modal-h {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--blue);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(0, 204, 255, .4);
+    }
+
+    .modal-close {
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 16px;
+      line-height: 1
+    }
+
+    .modal-close:hover {
+      color: var(--red);
+      text-shadow: 0 0 8px rgba(255, 26, 94, .5)
+    }
+
+    .form-row {
+      margin-bottom: 12px
+    }
+
+    .form-label {
+      font-size: 8px;
+      color: var(--text3);
+      margin-bottom: 5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .bk-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11.5px
+    }
+
+    .bk-row:last-child {
+      border-bottom: none
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border3);
+      border-radius: 2px
+    }
+
+    /* ═══ TOAST NOTIFICATIONS ═══ */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none
+    }
+
+    .toast {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--blue);
+      border-radius: 4px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 11px;
+      font-family: 'Exo 2', sans-serif;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .6);
+      animation: toastIn .3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut .3s ease 3s forwards;
+      transform-origin: bottom right;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.success {
+      border-left-color: var(--green)
+    }
+
+    .toast.warning {
+      border-left-color: var(--yellow)
+    }
+
+    .toast.error {
+      border-left-color: var(--red)
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1)
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateX(0) scale(1)
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9)
+      }
+    }
+
+    /* ═══ CONTEXT MENU ═══ */
+    .ctx-menu {
+      position: fixed;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 4px 0;
+      min-width: 140px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .8);
+      z-index: 9999;
+      display: none;
+      font-size: 11px;
+      font-family: 'Exo 2', sans-serif;
+    }
+
+    .ctx-menu.show {
+      display: block;
+      animation: pgFade .1s ease
+    }
+
+    .ctx-item {
+      padding: 6px 16px;
+      cursor: pointer;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .ctx-item:hover {
+      background: rgba(0, 204, 255, .08);
+      color: var(--blue)
+    }
+
+    .ctx-item.danger:hover {
+      background: rgba(255, 26, 94, .08);
+      color: var(--red)
+    }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 1024px) {
+      .g4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app {
+        flex-direction: column;
+      }
+
+      .sb {
+        width: 100%;
+        flex-direction: row;
+        height: 50px;
+        overflow: visible;
+        padding: 0 10px;
+        border-right: none;
+        border-bottom: 1px solid var(--border2);
+        align-items: center;
+      }
+
+      .sb-logo {
+        margin-right: auto;
+      }
+
+      .sb.exp {
+        width: 100%;
+        height: auto;
+        position: absolute;
+        z-index: 1001;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px;
+        background: var(--bg2);
+      }
+
+      .sb-divider {
+        width: 1px;
+        height: 24px;
+        margin: 0 8px;
+      }
+
+      .sb.exp .sb-divider {
+        width: 100%;
+        height: 1px;
+        margin: 4px 0;
+      }
+
+      .g2,
+      .g3,
+      .g4 {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 12px;
+      }
+
+      .modal {
+        width: 90vw;
+      }
+
+      .tb-title {
+        font-size: 10px;
+      }
+
+      .search-box {
+        width: 140px;
+      }
+
+      .status-pill {
+        display: none;
+      }
+
+      /* Hide on mobile to save space */
+      .ni {
+        width: 34px;
+        height: 34px;
+      }
+
+      .sb-bottom {
+        border-top: none;
+        padding-top: 0;
+        flex-direction: row;
+        width: auto;
+        margin-top: 0;
+      }
+
+      .sb.exp .sb-bottom {
+        flex-direction: column;
+        border-top: 1px solid var(--border2);
+        padding-top: 8px;
+        width: 100%;
+        margin-top: auto;
+      }
+
+      #hud-tl,
+      #hud-tr,
+      #hud-bl,
+      #hud-br {
+        display: none;
+      }
+
+      /* ═══ LOGIN PAGE ═══ */
+      #login-page {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: var(--bg);
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 204, 255, 0.1) 0%, transparent 70%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(20px);
+      }
+
+      .login-card {
+        background: var(--glass);
+        backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--border2);
+        border-radius: 12px;
+        padding: 40px;
+        width: 400px;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 204, 255, 0.1);
+        text-align: center;
+        animation: pgFade 0.5s ease;
+      }
+
+      .login-logo {
+        font-size: 40px;
+        margin-bottom: 20px;
+      }
+
+      .login-title {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--blue);
+        margin-bottom: 30px;
+        letter-spacing: 2px;
+      }
+
+      .login-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px 16px;
+        color: #fff;
+        margin-bottom: 20px;
+        outline: none;
+      }
+
+      .login-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 10px rgba(0, 204, 255, 0.2);
+      }
+
+      .login-btn {
+        width: 100%;
+        border: none;
+        padding: 14px;
+        border-radius: 6px;
+        background: var(--grad);
+        color: #000;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+      }
+
+      .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 204, 255, 0.4);
+      }
+
+      /* ═══ GLASS OVERRIDE ═══ */
+      .card,
+      .sb,
+      .topbar,
+      .notif-panel,
+      .settings-panel,
+      .modal,
+      .ctx-menu {
+        background: var(--glass) !important;
+        backdrop-filter: var(--glass-blur) !important;
+        border: 1px solid var(--border) !important;
+      }
+
+      .page {
+        background: transparent !important;
+      }
+
+      .sb {
+        width: 60px;
+        z-index: 1001;
+      }
+
+      .sb.exp {
+        width: 240px;
+      }
+  </style>
+</head>
+
+<body>
+
+  <div id="login-page">
+    <div class="login-card">
+      <div class="login-logo">⚡</div>
+      <h2 class="login-title">ServerPanel Pro</h2>
+      <input type="text" id="login-user" class="login-input" placeholder="Kullanıcı Adı" value="admin">
+      <input type="password" id="login-pass" class="login-input" placeholder="Şifre" value="admin">
+      <button class="login-btn" onclick="attemptLogin()">Sisteme Gir</button>
+    </div>
+  </div>
+
+  <div class="app" id="app" style="display:none">
+    <!-- SIDEBAR -->
+    <div class="sb" id="sidebar">
+      <div class="sb-logo" onclick="toggleSidebar()" title="Menüyü aç/kapat">
+        ⚡
+        <div class="logo-texts">
+          <div class="logo-name">ServerPanel</div>
+          <div class="logo-ver">Pro v3.0</div>
+        </div>
+      </div>
+      <div class="sb-divider"></div>
+
+      <div class="sb-section-label">PANEL</div>
+      <div class="ni act" onclick="nav('overview')" id="ni-overview"><span class="ni-ico">📊</span><span
+          class="ni-lbl">Genel Bakış</span></div>
+      <div class="ni" onclick="nav('services')" id="ni-services"><span class="ni-ico">⚙️</span><span
+          class="ni-lbl">Servis Yöneticisi</span><span class="ni-badge g" id="badge-services">8</span></div>
+      <div class="sb-divider"></div>
+
+      <div class="sb-section-label">KONFİGÜRASYON</div>
+      <div class="ni" onclick="nav('domains')" id="ni-domains"><span class="ni-ico">🌐</span><span class="ni-lbl">Domain
+          & DNS</span><span class="ni-badge y">!</span></div>
+      <div class="ni" onclick="nav('files')" id="ni-files"><span class="ni-ico">📁</span><span class="ni-lbl">Dosya
+          Yöneticisi</span></div>
+      <div class="ni" onclick="nav('databases')" id="ni-databases"><span class="ni-ico">🗄️</span><span
+          class="ni-lbl">Veritabanları</span><span class="ni-badge g">3</span></div>
+      <div class="ni" onclick="nav('email')" id="ni-email"><span class="ni-ico">📧</span><span
+          class="ni-lbl">E-posta</span><span class="ni-badge y">!</span></div>
+      <div class="ni" onclick="nav('cron')" id="ni-cron"><span class="ni-ico">⏰</span><span class="ni-lbl">Cron
+          Jobs</span></div>
+      <div class="ni" onclick="nav('backup')" id="ni-backup"><span class="ni-ico">💾</span><span
+          class="ni-lbl">Yedekleme</span></div>
+      <div class="sb-divider"></div>
+
+      <div class="sb-section-label">GÜVENLİK & ARAÇLAR</div>
+      <div class="ni" onclick="nav('security')" id="ni-security"><span class="ni-ico">🛡️</span><span
+          class="ni-lbl">Güvenlik</span><span class="ni-badge r">2</span></div>
+      <div class="ni" onclick="nav('terminal')" id="ni-terminal"><span class="ni-ico">⌨️</span><span class="ni-lbl">Web
+          Terminal</span></div>
+      <div class="ni" onclick="nav('logs')" id="ni-logs"><span class="ni-ico">📋</span><span class="ni-lbl">Sistem
+          Logları</span></div>
+
+      <div class="sb-bottom">
+        <div class="ni" onclick="toggleTheme()" id="ni-theme"><span class="ni-ico" id="theme-ico">☀️</span><span
+            class="ni-lbl">Tema Değiştir</span></div>
+        <div class="user-chip">
+          <div class="avatar">A</div>
+          <div class="user-info">
+            <div class="user-name">root</div>
+            <div class="user-role">Süper Yönetici</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="tb-title" id="tb-title">📊 Genel Bakış</div>
+        <div class="search-box">
+          <span style="color:var(--text4)">🔍</span>
+          <input type="text" placeholder="Ara veya komut gir..." onkeyup="handleSearch(this.value)">
+        </div>
+        <div class="status-pill">
+          <div class="pulse"></div>Tüm Sistemler Aktif
+        </div>
+        <div class="tb-btn notif-btn" onclick="togglePanel('notif')">🔔<div class="notif-dot"></div>
+        </div>
+        <div class="tb-btn" onclick="togglePanel('settings')">⚙️</div>
+        <div class="avatar" style="cursor:pointer;width:32px;height:32px;font-size:12px">A</div>
+      </div>
+
+      <!-- NOTIFICATION PANEL -->
+      <div class="notif-panel" id="notif-panel">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:700">🔔
+          Bildirimler</div>
+        <div class="notif-item">
+          <div class="notif-dot-i" style="background:var(--red)"></div>
+          <div>
+            <div style="font-weight:600;color:var(--text)">SSL Sertifikası Sona Eriyor</div>
+            <div style="color:var(--text3);font-size:10.5px;margin-top:2px">shop.example.com — 15 gün kaldı</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-i" style="background:var(--yellow)"></div>
+          <div>
+            <div style="font-weight:600;color:var(--text)">Yüksek CPU Kullanımı</div>
+            <div style="color:var(--text3);font-size:10.5px;margin-top:2px">php-fpm prosesi %87 CPU kullanıyor</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-i" style="background:var(--red)"></div>
+          <div>
+            <div style="font-weight:600;color:var(--text)">Brute Force Saldırısı</div>
+            <div style="color:var(--text3);font-size:10.5px;margin-top:2px">47 başarısız SSH denemesi engellendi</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-i" style="background:var(--green)"></div>
+          <div>
+            <div style="font-weight:600;color:var(--text)">Yedekleme Tamamlandı</div>
+            <div style="color:var(--text3);font-size:10.5px;margin-top:2px">shop_production: 1.8 GB — başarılı</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-i" style="background:var(--blue)"></div>
+          <div>
+            <div style="font-weight:600;color:var(--text)">Sistem Güncellemesi</div>
+            <div style="color:var(--text3);font-size:10.5px;margin-top:2px">3 güvenlik güncellemesi mevcut</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PANEL -->
+      <div class="settings-panel" id="settings-panel">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px">⚙️ Hızlı Ayarlar</div>
+        <div class="set-row"><span>Koyu Tema</span>
+          <div class="tg on" id="theme-tg" onclick="toggleTheme()"></div>
+        </div>
+        <div class="set-row"><span>Bildirimleri Göster</span>
+          <div class="tg on"></div>
+        </div>
+        <div class="set-row"><span>Otomatik Yenileme</span>
+          <div class="tg on"></div>
+        </div>
+        <div class="set-row"><span>2 Faktörlü Doğrulama</span>
+          <div class="tg on"></div>
+        </div>
+        <div class="set-row"><span>API Erişimi</span>
+          <div class="tg"></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:6px">
+          <button class="btn d" style="flex:1"
+            onclick="if(confirm('Çıkış yapmak istiyor musunuz?'))alert('Çıkış yapıldı.')">🚪 Çıkış</button>
+          <button class="btn p" style="flex:1">🔒 Şifre Değiştir</button>
+        </div>
+      </div>
+
+      <!-- PAGE CONTENT -->
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+    <div class="modal" id="modal">
+      <div class="modal-h"><span id="modal-title">Modal</span><span class="modal-close" onclick="closeModal()">✕</span>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- CONTEXT MENU -->
+  <div id="ctx-menu" class="ctx-menu">
+    <div class="ctx-item" onclick="ctxAction('open')"><span>📂</span> Aç / Görüntüle</div>
+    <div class="ctx-item" onclick="ctxAction('edit')"><span>✏️</span> Düzenle</div>
+    <div class="ctx-item" onclick="ctxAction('perms')"><span>🔐</span> İzinleri Değiştir</div>
+    <div class="ctx-item" onclick="ctxAction('download')"><span>📥</span> İndir</div>
+    <div style="height:1px;background:var(--border2);margin:4px 0"></div>
+    <div class="ctx-item danger" onclick="ctxAction('delete')"><span>🗑️</span> Sil</div>
+  </div>
+
+  <script>
+    // ============================================================
+    //  SERVERPANEL PRO — FULL JAVASCRIPT ENGINE
+    // ============================================================
+
+    let authToken = localStorage.getItem('panel_token') || '';
+    let currentPage = 'overview';
+    let isDark = true;
+    let sidebarExp = false;
+    let services, cronJobs, fwRules, dnsRecords, emailAccounts, databases, backups;
+
+    async function attemptLogin() {
+      const user = document.getElementById('login-user').value;
+      const pass = document.getElementById('login-pass').value;
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          authToken = data.token;
+          localStorage.setItem('panel_token', authToken);
+          showApp();
+        } else {
+          alert('Hatalı giriş!');
+        }
+      } catch (e) { alert('Bağlantı hatası!'); }
+    }
+
+    function showApp() {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      initData();
+      nav('overview');
+    }
+
+    // Auth check on load
+    window.addEventListener('load', () => {
+      if (authToken) showApp();
+    });
+
+    async function apiFetch(url, options = {}) {
+      if (!options.headers) options.headers = {};
+      options.headers['Authorization'] = `Basic ${authToken}`;
+      const res = await fetch(url, options);
+      if (res.status === 401) {
+        localStorage.removeItem('panel_token');
+        location.reload();
+      }
+      return res;
+    }
+
+    let sysMetrics = { cpu: 0, ram: 0, net: 0, req: 0, uptime: 0 };
+    let spkData = {
+      cpu: Array(20).fill(0), ram: Array(20).fill(0), net: Array(20).fill(0), req: Array(20).fill(0),
+      cpuLong: Array(30).fill(0), netLong: Array(30).fill(0)
+    };
+    setInterval(async () => {
+      try {
+        const res = await apiFetch('/api/metrics');
+        const data = await res.json();
+        sysMetrics.cpu = data.cpu || 0;
+        sysMetrics.ram = data.ram || 0;
+        sysMetrics.net = data.net || 0;
+        sysMetrics.req = data.req || 0;
+        sysMetrics.uptime = data.uptime || 0;
+        sysMetrics.ramUsed = data.ramUsed || 0;
+        sysMetrics.ramTotal = data.ramTotal || 0;
+      } catch (e) {
+        // Silently handle error
+      }
+
+      spkData.cpu.shift(); spkData.cpu.push(sysMetrics.cpu);
+      spkData.ram.shift(); spkData.ram.push(sysMetrics.ram);
+      spkData.net.shift(); spkData.net.push(Math.min(100, sysMetrics.net / 5));
+      spkData.req.shift(); spkData.req.push(Math.min(100, sysMetrics.req / 30));
+      spkData.cpuLong.shift(); spkData.cpuLong.push(sysMetrics.cpu);
+      spkData.netLong.shift(); spkData.netLong.push(Math.min(100, sysMetrics.net / 5));
+
+      if (currentPage === 'overview' && !document.getElementById('modal-bg').classList.contains('open')) renderPage('overview');
+    }, 2500);
+
+    // ── INIT DATA ──
+    function initData() {
+      services = [
+        { name: 'nginx', label: 'Nginx', icon: '🌐', status: 'running', pid: 1234, mem: '42 MB', cpu: '0.3%', uptime: '12g 4s' },
+        { name: 'mysql', label: 'MySQL 8.0', icon: '🗄️', status: 'running', pid: 1891, mem: '312 MB', cpu: '1.2%', uptime: '12g 4s' },
+        { name: 'php-fpm', label: 'PHP-FPM 8.2', icon: '⚙️', status: 'running', pid: 2054, mem: '128 MB', cpu: '3.1%', uptime: '12g 4s' },
+        { name: 'redis', label: 'Redis 7.0', icon: '⚡', status: 'running', pid: 2201, mem: '18 MB', cpu: '0.1%', uptime: '12g 4s' },
+        { name: 'postfix', label: 'Postfix SMTP', icon: '📧', status: 'running', pid: 2380, mem: '24 MB', cpu: '0.0%', uptime: '12g 4s' },
+        { name: 'dovecot', label: 'Dovecot IMAP', icon: '📬', status: 'stopped', pid: '—', mem: '—', cpu: '—', uptime: '—' },
+        { name: 'fail2ban', label: 'Fail2ban', icon: '🛡️', status: 'running', pid: 2512, mem: '8 MB', cpu: '0.0%', uptime: '12g 4s' },
+        { name: 'clamav', label: 'ClamAV', icon: '🔍', status: 'stopped', pid: '—', mem: '—', cpu: '—', uptime: '—' },
+      ];
+      cronJobs = [
+        { expr: '0 2 * * *', cmd: '/usr/bin/certbot renew --quiet', last: '02:00 ✓', status: 'ok' },
+        { expr: '*/5 * * * *', cmd: 'php /var/www/html/cron.php', last: '14:25 ✓', status: 'ok' },
+        { expr: '0 3 * * 0', cmd: '/opt/backup/site_backup.sh', last: 'Paz 03:00 ✓', status: 'ok' },
+        { expr: '0 */6 * * *', cmd: '/usr/bin/find /tmp -mtime +1 -delete', last: '12:00 ✓', status: 'ok' },
+        { expr: '30 1 * * *', cmd: '/opt/mysql/mysql_backup.sh', last: '01:30 ✗', status: 'err' },
+      ];
+      fwRules = [
+        { rule: 'SSH', port: 22, ip: '10.0.0.0/8', action: 'ALLOW', enabled: true, hits: '24' },
+        { rule: 'HTTP', port: 80, ip: '0.0.0.0/0', action: 'ALLOW', enabled: true, hits: '18.4k' },
+        { rule: 'HTTPS', port: 443, ip: '0.0.0.0/0', action: 'ALLOW', enabled: true, hits: '142k' },
+        { rule: 'MySQL', port: 3306, ip: '127.0.0.1', action: 'ALLOW', enabled: true, hits: '89k' },
+        { rule: 'SMTP', port: 25, ip: '0.0.0.0/0', action: 'ALLOW', enabled: true, hits: '2.1k' },
+        { rule: 'Cloudflare IP', port: 443, ip: '103.21.244.0/22', action: 'BLOCK', enabled: true, hits: '847' },
+        { rule: 'Brute Force', port: 22, ip: '185.220.101.0/24', action: 'BLOCK', enabled: false, hits: '5' },
+        { rule: 'Port Scan', port: '*', ip: '45.33.0.0/16', action: 'BLOCK', enabled: true, hits: '213' },
+      ];
+      dnsRecords = [
+        { name: '@', type: 'A', val: '185.220.101.45', ttl: '3600', edit: false },
+        { name: 'www', type: 'CNAME', val: 'example.com', ttl: '3600', edit: false },
+        { name: 'api', type: 'A', val: '185.220.101.45', ttl: '300', edit: false },
+        { name: 'mail', type: 'MX', val: 'mail.example.com 10', ttl: '3600', edit: false },
+        { name: 'smtp', type: 'A', val: '185.220.101.45', ttl: '3600', edit: false },
+        { name: '@', type: 'TXT', val: 'v=spf1 include:sendgrid.net ~all', ttl: '3600', edit: false },
+        { name: '_dmarc', type: 'TXT', val: 'v=DMARC1; p=reject; rua=mailto:dmarc@example.com', ttl: '3600', edit: false },
+      ];
+      emailAccounts = [
+        { user: 'admin', domain: 'example.com', quota: 500, usedPct: 82, status: 'ok' },
+        { user: 'info', domain: 'example.com', quota: 1024, usedPct: 34, status: 'ok' },
+        { user: 'noreply', domain: 'example.com', quota: 200, usedPct: 11, status: 'ok' },
+        { user: 'admin', domain: 'shop.example.com', quota: 500, usedPct: 95, status: 'warn' },
+      ];
+      databases = [
+        { name: 'mywordpress_db', engine: 'MySQL 8.0', size: '248 MB', tables: 42, queries: '1.2k/s', status: 'ok' },
+        { name: 'shop_production', engine: 'MySQL 8.0', size: '1.8 GB', tables: 187, queries: '4.8k/s', status: 'ok' },
+        { name: 'analytics_data', engine: 'MySQL 8.0', size: '4.2 GB', tables: 23, queries: '340/s', status: 'warn' },
+      ];
+      backups = [
+        { name: 'site_backup_2024-01-15.tar.gz', type: 'Site', size: '3.2 GB', date: '2024-01-15 03:00', status: 'ok' },
+        { name: 'mysql_shop_2024-01-15.sql.gz', type: 'MySQL', size: '1.8 GB', date: '2024-01-15 03:15', status: 'ok' },
+        { name: 'site_backup_2024-01-14.tar.gz', type: 'Site', size: '3.1 GB', date: '2024-01-14 03:00', status: 'ok' },
+        { name: 'mysql_shop_2024-01-14.sql.gz', type: 'MySQL', size: '1.7 GB', date: '2024-01-14 03:15', status: 'ok' },
+        { name: 'mysql_shop_2024-01-13.sql.gz', type: 'MySQL', size: '1.9 GB', date: '2024-01-13 01:30', status: 'err' },
+      ];
+    }
+
+    // ── UTILITIES ──
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '🚨' : 'ℹ️';
+      t.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+      container.appendChild(t);
+      setTimeout(() => t.remove(), 3400);
+    }
+
+    // Override alert with showToast for global notification integration
+    window.alert = function (msg) {
+      const type = (msg.toLowerCase().includes('hata') || msg.toLowerCase().includes('silin')) ? 'error' : (msg.toLowerCase().includes('başarılı') || msg.toLowerCase().includes('yenilendi')) ? 'success' : 'info';
+      showToast(msg, type);
+    };
+
+    function handleSearch(val) {
+      const q = val.toLowerCase();
+      const rows = document.querySelectorAll('.page .tbl tbody tr, .page .bk-row');
+      rows.forEach(r => {
+        if (r.textContent.toLowerCase().includes(q)) r.style.display = '';
+        else r.style.display = 'none';
+      });
+    }
+
+    function humanCron(expr) {
+      if (!expr) return '';
+      const p = expr.trim().split(/\s+/);
+      if (p.length !== 5) return 'Geçersiz format';
+      if (expr === '* * * * *') return 'Her dakika';
+      if (expr === '0 * * * *') return 'Her saat başı';
+      if (p[0].startsWith('*/') && p.slice(1).every(x => x === '*')) return `Her ${p[0].substring(2)} dakikada bir`;
+      if (p[0] === '0' && p[1].startsWith('*/') && p.slice(2).every(x => x === '*')) return `Her ${p[1].substring(2)} saatte bir`;
+      return 'Özel cron (' + expr + ')';
+    }
+
+    function formatUptime(seconds) {
+      if (!seconds) return '—';
+      const d = Math.floor(seconds / (3600 * 24));
+      const h = Math.floor(seconds % (3600 * 24) / 3600);
+      const m = Math.floor(seconds % 3600 / 60);
+      let s = '';
+      if (d > 0) s += d + 'g ';
+      if (h > 0) s += h + 's ';
+      if (m > 0) s += m + 'dk';
+      return s || 'Yeni başladı';
+    }
+
+    function sparkBars(data, color = 'var(--blue)') {
+      const max = Math.max(...data);
+      return data.map((v, i) => `<div class="spk" style="width:4px;height:${Math.max(4, (v / max * 26))}px;background:${color};opacity:${i === data.length - 1 ? 1 : .5}"></div>`).join('');
+    }
+
+    function randSpark(n = 20, min = 10, max = 90) {
+      return Array.from({ length: n }, () => Math.floor(Math.random() * (max - min) + min));
+    }
+
+    function pbColor(v) {
+      return v > 85 ? 'var(--red)' : v > 65 ? 'var(--yellow)' : 'var(--blue)';
+    }
+
+    function pbHtml(pct, color) {
+      return `<div class="pb"><div class="pb-f" style="width:${pct}%;background:${color || pbColor(pct)}"></div></div>`;
+    }
+
+    function badge(text, cls) {
+      return `<span class="badge ${cls}">${text}</span>`;
+    }
+
+    function btn(text, cls = '', onclick = '') {
+      return `<button class="btn ${cls}" onclick="${onclick}">${text}</button>`;
+    }
+
+    function ring(pct, color, size = 54) {
+      const r = 20, c = size / 2, circ = 2 * Math.PI * r;
+      const dash = circ * (pct / 100);
+      return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--bg4)" stroke-width="5"/>
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="5"
+      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+      style="transform:rotate(-90deg);transform-origin:${c}px ${c}px"/>
+    <text x="${c}" y="${c}" text-anchor="middle" dominant-baseline="central"
+      font-size="10" font-weight="700" fill="${color}" font-family="Courier New">${pct}%</text>
+  </svg>`;
+    }
+
+    function miniChart(data, color) {
+      const w = 320, h = 55, n = data.length;
+      const mx = Math.max(...data), mn = Math.min(...data);
+      const pts = data.map((v, i) => {
+        const x = (i / (n - 1)) * w;
+        const y = h - ((v - mn) / (mx - mn || 1)) * (h - 8) - 4;
+        return `${x},${y}`;
+      }).join(' ');
+      const area = `M0,${h} ` + data.map((v, i) => {
+        const x = (i / (n - 1)) * w;
+        const y = h - ((v - mn) / (mx - mn || 1)) * (h - 8) - 4;
+        return `L${x},${y}`;
+      }).join(' ') + ` L${w},${h} Z`;
+      return `<svg class="mini-chart" viewBox="0 0 ${w} ${h}" height="${h}" preserveAspectRatio="none">
+    <defs><linearGradient id="cg${color.replace(/[^a-z]/g, '')}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity=".2"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#cg${color.replace(/[^a-z]/g, '')})"/>
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+    }
+
+    // ── NAVIGATION ──
+    function nav(page) {
+      currentPage = page;
+      document.querySelectorAll('.ni').forEach(n => n.classList.remove('act'));
+      const ni = document.getElementById('ni-' + page);
+      if (ni) ni.classList.add('act');
+      const titles = {
+        overview: '📊 Genel Bakış', services: '⚙️ Servis Yöneticisi', domains: '🌐 Domain & DNS',
+        files: '📁 Dosya Yöneticisi', databases: '🗄️ Veritabanları', email: '📧 E-posta Yönetimi',
+        cron: '⏰ Cron Jobs', backup: '💾 Yedekleme', security: '🛡️ Güvenlik Merkezi',
+        terminal: '⌨️ Web Terminal', logs: '📋 Sistem Logları'
+      };
+      document.getElementById('tb-title').textContent = titles[page] || page;
+      renderPage(page);
+      closeAllPanels();
+    }
+
+    function toggleSidebar() {
+      sidebarExp = !sidebarExp;
+      document.getElementById('sidebar').classList.toggle('exp', sidebarExp);
+    }
+
+    function toggleTheme() {
+      isDark = !isDark;
+      document.body.className = isDark ? '' : 'light';
+      document.getElementById('theme-ico').textContent = isDark ? '☀️' : '🌙';
+      const tg = document.getElementById('theme-tg');
+      if (tg) tg.classList.toggle('on', isDark);
+    }
+
+    function togglePanel(id) {
+      const p = document.getElementById(id + '-panel');
+      const isOpen = p.classList.contains('open');
+      closeAllPanels();
+      if (!isOpen) p.classList.add('open');
+    }
+
+    function closeAllPanels() {
+      document.querySelectorAll('.notif-panel,.settings-panel').forEach(p => p.classList.remove('open'));
+    }
+
+    // ── MODAL ──
+    function openModal(title, bodyHtml) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      document.getElementById('modal-bg').classList.add('open');
+    }
+    function closeModal(e) {
+      if (!e || e.target === document.getElementById('modal-bg'))
+        document.getElementById('modal-bg').classList.remove('open');
+    }
+
+    // ── RENDER PAGES ──
+    function renderPage(page) {
+      const el = document.getElementById('content');
+      const pages = {
+        overview: renderOverview, services: renderServices, domains: renderDomains,
+        files: renderFiles, databases: renderDatabases, email: renderEmail, cron: renderCron,
+        backup: renderBackup, security: renderSecurity, terminal: renderTerminal, logs: renderLogs
+      };
+      el.innerHTML = `<div class="page">${(pages[page] || renderOverview)()}</div>`;
+      if (page === 'terminal') initTerminal();
+    }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: OVERVIEW
+    // ══════════════════════════════════════════════
+    function renderOverview() {
+      const cpu = sysMetrics.cpu, ram = sysMetrics.ram, net = sysMetrics.net, req = sysMetrics.req;
+      const cpuSp = spkData.cpu, ramSp = spkData.ram, netSp = spkData.net;
+      const ramGB = (sysMetrics.ramUsed / (1024 * 1024 * 1024)).toFixed(1);
+      const ramTotal = Math.round(sysMetrics.ramTotal / (1024 * 1024 * 1024));
+
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Genel Bakış</div><div class="ph-sub">Gerçek zamanlı sunucu metrikleri — srv1.example.com</div></div>
+    <div style="display:flex;gap:8px">${btn('📊 Rapor İndir')} ${btn('⚡ Hızlı Yeniden Başlat', 'd', 'if(confirm(\"Sunucuyu yeniden başlatmak istiyor musunuz?\"))alert(\"Yeniden başlatılıyor...\")')}</div>
+  </div>
+  <div class="alert d">🚨 <strong>Kritik:</strong> shop.example.com SSL sertifikası 15 gün içinde sona eriyor. <span style="text-decoration:underline;cursor:pointer" onclick="nav('domains')">Hemen yenile →</span></div>
+  <div class="alert w">⚠️ Son 1 saatte 47 başarısız SSH bağlantı denemesi. fail2ban aktif koruma uyguluyor.</div>
+  <div class="g4">
+    <div class="sc"><div class="sc-accent" style="background:var(--blue)"></div>
+      <div class="sc-label">🔥 CPU Kullanımı</div>
+      <div class="sc-val" style="color:var(--blue)">${cpu}%</div>
+      <div class="sc-trend up">↑ 5% son 5 dk</div>
+      <div class="spark">${sparkBars(cpuSp, 'var(--blue)')}</div></div>
+    <div class="sc"><div class="sc-accent" style="background:var(--green)"></div>
+      <div class="sc-label">💾 RAM Kullanımı</div>
+      <div class="sc-val" style="color:var(--green)">${ramGB} GB</div>
+      <div class="sc-trend" style="color:var(--text3)">— ${ramTotal} GB toplam</div>
+      <div class="spark">${sparkBars(ramSp, 'var(--green)')}</div></div>
+    <div class="sc"><div class="sc-accent" style="background:var(--purple)"></div>
+      <div class="sc-label">📡 Ağ Hızı</div>
+      <div class="sc-val" style="color:var(--purple)">${net} Mbps</div>
+      <div class="sc-trend up">↑ 12% son 5 dk</div>
+      <div class="spark">${sparkBars(netSp, 'var(--purple)')}</div></div>
+    <div class="sc"><div class="sc-accent" style="background:var(--orange)"></div>
+      <div class="sc-label">⚡ Aktif İstek</div>
+      <div class="sc-val" style="color:var(--orange)">${req.toLocaleString()}</div>
+      <div class="sc-trend up">↑ 8% son 5 dk</div>
+      <div class="spark">${sparkBars(spkData.req, 'var(--orange)')}</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-h"><div class="card-t">⚙️ Kaynak Kullanımı</div>${badge('1.24 0.98 0.87 load avg', 'info')}</div>
+    <div class="card-b">
+      ${[['CPU — php-fpm', cpu, 'var(--blue)'], ['RAM — Kullanılan / 16 GB', ram, 'var(--green)'], ['Disk I/O — /dev/sda', 28, 'var(--purple)'], ['Ağ Bant Genişliği', 25, 'var(--orange)'], ['Swap — 2 GB', 15, 'var(--teal)']].map(([l, v, c]) => `
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:3px">
+          <span>${l}</span><span class="mono" style="color:${v > 80 ? 'var(--red)' : v > 60 ? 'var(--yellow)' : 'var(--text3)'}">${v}%</span>
+        </div>${pbHtml(v, c)}</div>`).join('')}
+    </div></div>
+    <div class="card"><div class="card-h"><div class="card-t">💿 Disk Depolama</div></div>
+    <div class="card-b">
+      <div style="display:flex;justify-content:space-around;margin-bottom:14px">
+        ${[['/ Kök', 24, 'var(--blue)'], ['www', 31, 'var(--green)'], ['/backup', 44, 'var(--orange)']].map(([l, v, c]) =>
+        `<div class="ring-wrap">${ring(v, c)}<div class="ring-label">${l}</div></div>`).join('')}
+      </div>
+      ${[['💿', '/ (kök)', '/dev/sda1', '48 GB', '200 GB', 24], ['📦', '/var/www', '/dev/sdb1', '156 GB', '500 GB', 31], ['🗂️', '/backup', '/dev/sdc1', '890 GB', '2 TB', 44]].map(([ico, nm, path, used, total, pct]) => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px">
+        <span>${ico}</span>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;color:var(--text2);margin-bottom:2px">
+            <span>${nm}</span><span class="mono" style="font-size:10px;color:var(--text3)">${used} / ${total}</span>
+          </div>${pbHtml(pct)}</div></div>`).join('')}
+    </div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-h"><div class="card-t">📈 CPU Geçmişi (1 saat)</div></div>
+    <div class="card-b" style="padding-bottom:8px">${miniChart(spkData.cpuLong, '#89b4fa')}</div></div>
+    <div class="card"><div class="card-h"><div class="card-t">📈 Ağ Trafiği (1 saat)</div></div>
+    <div class="card-b" style="padding-bottom:8px">${miniChart(spkData.netLong, '#cba6f7')}</div></div>
+  </div>
+  <div class="card"><div class="card-h"><div class="card-t">🖥️ Hızlı Sistem Bilgisi</div>${btn('🔄 Yenile')}</div>
+  <div class="card-b">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:11.5px">
+      ${[['🖥️ Hostname', location.hostname], ['🐧 İşletim Sistemi', 'Ubuntu / Windows (Real Node Backend)'], ['🔄 Backend Durumu', '🟢 Aktif'], ['⏱️ Çalışma Süresi', formatUptime(sysMetrics.uptime)], ['🌐 Sunucu Portu', '3000'], ['🔧 Mimari', 'x64'], ['💾 RAM', Math.round(sysMetrics.ramTotal / (1024 * 1024 * 1024)) + ' GB'], ['📦 Node.js', 'v20.x']].map(([l, v]) =>
+          `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:10px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${l}</div>
+        <div style="font-weight:600;color:var(--text);font-size:11px">${v}</div>
+      </div>`).join('')}
+    </div>
+  </div></div>`;
+    }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: SERVICES
+    // ══════════════════════════════════════════════
+    function renderServices() {
+      const run = services.filter(s => s.status === 'running').length;
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Servis Yöneticisi</div><div class="ph-sub">Sistem servisleri — systemd kontrolü</div></div>
+    <div style="display:flex;gap:8px">${btn('▶ Tümünü Başlat', 's')} ${btn('⬛ Tümünü Durdur', 'd', 'if(confirm(\"Tüm servisleri durdurmak istiyor musunuz?\"))alert(\"Uyarı: Bu işlem siteyi erişilemez yapabilir!\")')}</div>
+  </div>
+  <div class="g4">
+    <div class="sc"><div class="sc-label">🟢 Çalışan</div><div class="sc-val" style="color:var(--green)">${run}</div></div>
+    <div class="sc"><div class="sc-label">🔴 Durmuş</div><div class="sc-val" style="color:var(--red)">${services.length - run}</div></div>
+    <div class="sc"><div class="sc-label">💾 Toplam RAM</div><div class="sc-val" style="color:var(--blue)">532 MB</div></div>
+    <div class="sc"><div class="sc-label">🔥 Toplam CPU</div><div class="sc-val" style="color:var(--orange)">4.7%</div></div>
+  </div>
+  <div class="card"><div class="card-h"><div class="card-t">⚙️ Servis Listesi</div>${badge('systemd', 'info')}</div>
+  <table class="tbl"><thead><tr><th>Servis</th><th>PID</th><th>RAM</th><th>CPU</th><th>Çalışma</th><th>Durum</th><th>İşlem</th></tr></thead>
+  <tbody id="svc-tbody">
+  ${services.map((s, i) => `
+  <tr id="svc-${i}">
+    <td><span style="font-size:15px;margin-right:6px">${s.icon}</span><strong style="color:var(--text)">${s.label}</strong></td>
+    <td class="mono" style="color:var(--text3)">${s.pid}</td>
+    <td>${s.mem}</td><td>${s.cpu}</td><td>${s.uptime}</td>
+    <td>${badge(s.status === 'running' ? '● Çalışıyor' : '● Durmuş', s.status === 'running' ? 'ok' : 'err')}</td>
+    <td><div style="display:flex;gap:4px">
+      ${btn(s.status === 'running' ? '⬛ Durdur' : '▶ Başlat', s.status === 'running' ? 'd sm' : 's sm', `toggleService(${i})`)}
+      ${s.status === 'running' ? btn('↺ Restart', 'sm', `restartService(${i})`) : ''}
+      ${btn('📋 Log', 'sm', `viewServiceLog('${s.name}')`)}
+    </div></td>
+  </tr>`).join('')}
+  </tbody></table></div>`;
+    }
+    function toggleService(i) {
+      const svc = services[i];
+      if (svc.status === 'running') {
+        svc.status = 'stopped';
+        svc.pid = '—';
+        svc.mem = '—';
+        svc.cpu = '—';
+        svc.uptime = '—';
+        showToast(`${svc.label} durduruldu.`, 'error');
+        renderPage('services');
+      } else {
+        showToast(`${svc.label} başlatılıyor...`, 'info');
+        setTimeout(() => {
+          svc.status = 'running';
+          svc.pid = Math.floor(Math.random() * 5000 + 1000);
+          svc.mem = Math.floor(Math.random() * 100 + 10) + ' MB';
+          svc.cpu = (Math.random() * 5).toFixed(1) + '%';
+          svc.uptime = '0g 1sn';
+          showToast(`${svc.label} başarıyla başlatıldı.`, 'success');
+          if (currentPage === 'services') renderPage('services');
+        }, 1200);
+      }
+    }
+    function restartService(i) {
+      const svc = services[i];
+      showToast(`${svc.label} yeniden başlatılıyor...`, 'info');
+      setTimeout(() => { showToast(`${svc.label} yeniden başlatıldı!`, 'success'); }, 1200);
+    }
+    function viewServiceLog(name) {
+      openModal(`📋 ${name} Logları`, `
+  <div style="background:#070b10;border-radius:var(--r8);padding:12px;font-family:'Courier New',monospace;font-size:11px;color:#cdd6f4;height:200px;overflow-y:auto;line-height:1.7">
+    <div><span style="color:#45475a">Jan 15 14:28:01</span> srv1 ${name}[1234]: <span style="color:#a6e3a1">Starting ${name} service</span></div>
+    <div><span style="color:#45475a">Jan 15 14:28:01</span> srv1 ${name}[1234]: <span style="color:#89b4fa">Configuration loaded successfully</span></div>
+    <div><span style="color:#45475a">Jan 15 14:28:02</span> srv1 ${name}[1234]: <span style="color:#a6e3a1">Worker processes started (4 workers)</span></div>
+    <div><span style="color:#45475a">Jan 15 14:22:15</span> srv1 ${name}[1234]: <span style="color:#f9e2af">WARN: High memory usage detected: 87%</span></div>
+    <div><span style="color:#45475a">Jan 15 14:20:03</span> srv1 ${name}[1234]: <span style="color:#89b4fa">Connection from 192.168.1.44 accepted</span></div>
+    <div><span style="color:#45475a">Jan 15 14:18:55</span> srv1 ${name}[1234]: <span style="color:#a6e3a1">Request processed: 200 OK (0.042s)</span></div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:6px">${btn('📥 Log İndir', 'sm')} ${btn('🗑️ Logları Temizle', 'd sm')}</div>`);
+    }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: DOMAINS
+    // ══════════════════════════════════════════════
+    function renderDomains() {
+      const tab = window._domainTab || 'dns';
+      const domains = [
+        { name: 'example.com', ip: '185.220.101.45', ssl: 'ok', exp: '2025-12-01', days: 247, status: 'ok' },
+        { name: 'api.example.com', ip: '185.220.101.45', ssl: 'ok', exp: '2025-12-01', days: 247, status: 'ok' },
+        { name: 'shop.example.com', ip: '185.220.101.45', ssl: 'warn', exp: '2024-01-15', days: 15, status: 'warn' },
+        { name: 'staging.example.com', ip: '10.0.0.5', ssl: 'none', exp: '—', days: 0, status: 'off' },
+      ];
+      const sslCerts = [
+        { domain: 'example.com', issuer: "Let's Encrypt", exp: '2025-12-01', days: 247, status: 'ok' },
+        { domain: 'api.example.com', issuer: "Let's Encrypt", exp: '2025-12-01', days: 247, status: 'ok' },
+        { domain: 'shop.example.com', issuer: "Let's Encrypt", exp: '2024-01-15', days: 15, status: 'warn' },
+        { domain: 'staging.example.com', issuer: '—', exp: '—', days: 0, status: 'none' },
+      ];
+      const dnsTypeColors = { A: 'info', AAAA: 'info', CNAME: 'pur', MX: 'warn', TXT: 'ok', NS: 'off' };
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Domain & DNS Yönetimi</div><div class="ph-sub">Alan adları, DNS kayıtları ve SSL sertifikaları</div></div>
+  </div>
+  <div class="alert w">⚠️ shop.example.com SSL sertifikası 15 gün içinde sona eriyor.</div>
+  <div class="tabs">
+    ${[['dns', '🗺️ DNS Kayıtları'], ['domains', '🌐 Domainler'], ['ssl', '🔒 SSL Sertifikaları']].map(([t, l]) =>
+        `<div class="tab${tab === t ? ' a' : ''}" onclick="window._domainTab='${t}';nav('domains')">${l}</div>`).join('')}
+  </div>
+  ${tab === 'dns' ? `
+  <div class="card"><div class="card-h"><div class="card-t">📋 example.com — DNS Kayıtları</div>
+    <div style="display:flex;gap:6px">
+      ${btn('+ A Kaydı Ekle', 'p', 'addDnsRecord()')} ${btn('+ MX Ekle', '', 'addMxRecord()')}
+    </div></div>
+  <div style="display:grid;grid-template-columns:90px 55px 1fr 70px 80px;gap:8px;padding:7px 14px;border-bottom:1px solid var(--border)">
+    ${['İSİM', 'TİP', 'DEĞER', 'TTL', ''].map(h => `<span style="font-size:9px;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.5px">${h}</span>`).join('')}
+  </div>
+  ${dnsRecords.map((r, i) => `
+  <div style="display:grid;grid-template-columns:90px 55px 1fr 70px 80px;gap:8px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+    <span class="mono" style="font-size:11px;color:var(--text)">${r.name}</span>
+    ${badge(r.type, dnsTypeColors[r.type] || 'off')}
+    <span class="mono" style="font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block" title="${r.val}">${r.val}</span>
+    <span class="mono" style="font-size:10px;color:var(--text4)">${r.ttl}</span>
+    <div style="display:flex;gap:4px">${btn('✏️', 'sm', `editDns(${i})`)} ${btn('🗑️', 'd sm', `if(confirm('Bu kaydı silmek istiyor musunuz?')){dnsRecords.splice(${i},1);nav('domains')}`)}</div>
+  </div>`).join('')}
+  </div>`: tab === 'domains' ? `
+  <div class="card"><div class="card-h"><div class="card-t">🌐 Alan Adları</div>${btn('+ Domain Ekle', 'p', 'addDomain()')}</div>
+  <table class="tbl"><thead><tr><th>Domain</th><th>IP Adresi</th><th>SSL</th><th>Son Kullanma</th><th>Kalan</th><th>Durum</th><th>İşlem</th></tr></thead>
+  <tbody>${domains.map(d => `<tr>
+    <td><strong style="color:var(--text)">${d.name}</strong></td>
+    <td class="mono" style="font-size:10px">${d.ip}</td>
+    <td>${badge(d.ssl === 'ok' ? '✓ Aktif' : d.ssl === 'warn' ? '⚠ Uyarı' : '✗ Yok', d.ssl === 'ok' ? 'ok' : d.ssl === 'warn' ? 'warn' : 'err')}</td>
+    <td style="font-size:11px">${d.exp}</td>
+    <td>${d.days > 0 ? badge(d.days + ' gün', d.days < 30 ? 'warn' : 'ok') : '—'}</td>
+    <td>${badge(d.status === 'ok' ? 'Aktif' : d.status === 'warn' ? 'Uyarı' : 'Pasif', d.status === 'ok' ? 'ok' : d.status === 'warn' ? 'warn' : 'off')}</td>
+    <td><div style="display:flex;gap:4px">${btn('DNS', 'sm', `window._domainTab='dns';nav('domains')`)} ${btn('SSL', 'sm p', `window._domainTab='ssl';nav('domains')`)} ${btn('🗑️', 'd sm')}</div></td>
+  </tr>`).join('')}</tbody></table></div>` :
+          `<div class="card"><div class="card-h"><div class="card-t">🔒 SSL Sertifikaları</div>${btn("+ Let's Encrypt Ekle", 'p', 'addSsl()')}</div>
+  ${sslCerts.map(c => `
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+    <span style="font-size:22px">${c.status === 'ok' ? '🔒' : c.status === 'warn' ? '⚠️' : '🔓'}</span>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:12px;margin-bottom:2px">${c.domain}</div>
+      <div style="font-size:10.5px;color:var(--text3)">${c.issuer !== '—' ? `${c.issuer} · Son kullanma: ${c.exp}` : 'SSL sertifikası yüklü değil'}</div>
+    </div>
+    ${c.days > 0 ? badge(c.days + ' gün kaldı', c.days < 30 ? 'warn' : 'ok') : ''}
+    ${btn(c.status === 'none' ? '🔒 SSL Yükle' : c.status === 'warn' ? '🔄 Acil Yenile' : '🔄 Yenile', c.status === 'warn' ? 'p' : '', 'renewSsl(\'' + c.domain + '\')')}
+  </div>`).join('')}</div>`}`;
+    }
+    function addDnsRecord() {
+      openModal('+ DNS Kaydı Ekle', `
+  <div class="form-row"><label class="form-label">İsim</label><input class="inp" id="dns-name" placeholder="@ veya subdomain"></div>
+  <div class="form-row"><label class="form-label">Tip</label><select class="inp" id="dns-type"><option>A</option><option>AAAA</option><option>CNAME</option><option>MX</option><option>TXT</option><option>NS</option></select></div>
+  <div class="form-row"><label class="form-label">Değer</label><input class="inp" id="dns-val" placeholder="185.220.101.45"></div>
+  <div class="form-row"><label class="form-label">TTL</label><input class="inp" id="dns-ttl" placeholder="3600" value="3600"></div>
+  <div style="display:flex;gap:8px;margin-top:4px">
+    ${btn('💾 Kaydet', 'p', 'saveDnsRecord()')} ${btn('İptal', '', 'closeModal()')}
+  </div>`);
+    }
+    function saveDnsRecord() {
+      const n = document.getElementById('dns-name').value;
+      const t = document.getElementById('dns-type').value;
+      const v = document.getElementById('dns-val').value;
+      const ttl = document.getElementById('dns-ttl').value;
+      if (n && v) { dnsRecords.push({ name: n, type: t, val: v, ttl: ttl }); closeModal(); nav('domains'); }
+      else alert('Lütfen tüm alanları doldurun.');
+    }
+    function editDns(i) {
+      const r = dnsRecords[i];
+      openModal('✏️ DNS Kaydı Düzenle', `
+  <div class="form-row"><label class="form-label">İsim</label><input class="inp" id="edit-name" value="${r.name}"></div>
+  <div class="form-row"><label class="form-label">Değer</label><input class="inp" id="edit-val" value="${r.val}"></div>
+  <div class="form-row"><label class="form-label">TTL</label><input class="inp" id="edit-ttl" value="${r.ttl}"></div>
+  <div style="display:flex;gap:8px;margin-top:4px">
+    ${btn('💾 Kaydet', 'p', `dnsRecords[${i}].name=document.getElementById('edit-name').value;dnsRecords[${i}].val=document.getElementById('edit-val').value;dnsRecords[${i}].ttl=document.getElementById('edit-ttl').value;closeModal();nav('domains')`)}
+    ${btn('İptal', '', 'closeModal()')}
+  </div>`);
+    }
+    function addDomain() { openModal('+ Yeni Domain', `<div class="form-row"><label class="form-label">Alan Adı</label><input class="inp" placeholder="example.com"></div><div class="form-row"><label class="form-label">IP Adresi</label><input class="inp" placeholder="185.220.101.45"></div>${btn('Ekle', 'p', 'closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+    function addSsl() { openModal("🔒 Let's Encrypt SSL Ekle", `<div class="form-row"><label class="form-label">Domain</label><input class="inp" placeholder="example.com"></div><div class="alert i">ℹ️ Let's Encrypt ücretsiz SSL sertifikası 90 günde bir otomatik yenilenir.</div>${btn('🔒 Sertifika Oluştur', 'p', 'alert(\"SSL sertifikası oluşturuluyor...\");closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+    function renewSsl(d) { if (confirm(`${d} için SSL sertifikası yenilensin mi?`)) alert(`${d} SSL sertifikası yenilendi!`) }
+    function addMxRecord() { openModal('+ MX Kaydı Ekle', `<div class="form-row"><label class="form-label">Mail Sunucusu</label><input class="inp" placeholder="mail.example.com"></div><div class="form-row"><label class="form-label">Öncelik</label><input class="inp" value="10" type="number"></div>${btn('Ekle', 'p', 'closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: FILES
+    // ══════════════════════════════════════════════
+    let selectedFile = '/var/www/html/wp-config.php';
+    let expandedDirs = { '/var': true, '/var/www': true, '/var/www/html': true };
+    const fileTree = [
+      { n: 'var', t: 'd', ch: [{ n: 'www', t: 'd', ch: [{ n: 'html', t: 'd', ch: [{ n: 'index.php', t: 'f', sz: '4.2 KB' }, { n: 'config.php', t: 'f', sz: '1.8 KB' }, { n: 'wp-config.php', t: 'f', sz: '3.1 KB' }, { n: '.htaccess', t: 'f', sz: '820 B' }] }, { n: 'uploads', t: 'd', ch: [{ n: '2024', t: 'd', ch: [] }] }] }] },
+      { n: 'etc', t: 'd', ch: [{ n: 'nginx', t: 'd', ch: [{ n: 'nginx.conf', t: 'f', sz: '2.4 KB' }, { n: 'sites-enabled', t: 'd', ch: [{ n: 'example.com.conf', t: 'f', sz: '1.1 KB' }] }] }, { n: 'php', t: 'd', ch: [{ n: '8.2', t: 'd', ch: [{ n: 'php.ini', t: 'f', sz: '78 KB' }] }] }, { n: 'mysql', t: 'd', ch: [{ n: 'my.cnf', t: 'f', sz: '4.2 KB' }] }] },
+      { n: 'opt', t: 'd', ch: [{ n: 'backup', t: 'd', ch: [{ n: 'site_backup.sh', t: 'f', sz: '3.8 KB' }, { n: 'mysql_backup.sh', t: 'f', sz: '2.1 KB' }] }] },
+    ];
+    const fileContents = {
+      '/var/www/html/wp-config.php': '<span style="color:#6c7086">&lt;?php\n/** WordPress Veritabanı Konfigürasyonu */\n</span><span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'DB_NAME\'</span>, <span style="color:#f38ba8">\'mywordpress_db\'</span> );\n<span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'DB_USER\'</span>, <span style="color:#f38ba8">\'wp_admin\'</span> );\n<span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'DB_PASSWORD\'</span>, <span style="color:#f38ba8">\'••••••••\'</span> );\n<span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'DB_HOST\'</span>, <span style="color:#f38ba8">\'localhost\'</span> );\n<span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'DB_CHARSET\'</span>, <span style="color:#f38ba8">\'utf8mb4\'</span> );\n\n<span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'WP_DEBUG\'</span>, <span style="color:#cba6f7">false</span> );\n<span style="color:#89b4fa">define</span>( <span style="color:#a6e3a1">\'WP_DEBUG_LOG\'</span>, <span style="color:#cba6f7">false</span> );\n\n<span style="color:#cba6f7">$table_prefix</span> = <span style="color:#a6e3a1">\'wp_\'</span>;',
+      '/etc/nginx/nginx.conf': '<span style="color:#6c7086"># Nginx Ana Konfigürasyon Dosyası</span>\n<span style="color:#89b4fa">user</span> www-data;\n<span style="color:#89b4fa">worker_processes</span> auto;\n<span style="color:#89b4fa">pid</span> /run/nginx.pid;\n\n<span style="color:#cba6f7">events</span> {\n    <span style="color:#89b4fa">worker_connections</span> 1024;\n}\n\n<span style="color:#cba6f7">http</span> {\n    <span style="color:#89b4fa">include</span> /etc/nginx/sites-enabled/*;\n    <span style="color:#89b4fa">gzip</span> on;\n    <span style="color:#89b4fa">server_tokens</span> off;\n    <span style="color:#89b4fa">client_max_body_size</span> 100M;\n}',
+      '/etc/nginx/sites-enabled/example.com.conf': '<span style="color:#cba6f7">server</span> {\n    <span style="color:#89b4fa">listen</span> 80;\n    <span style="color:#89b4fa">listen</span> [::]:80;\n    <span style="color:#89b4fa">server_name</span> example.com www.example.com;\n    <span style="color:#89b4fa">return</span> 301 https://$server_name$request_uri;\n}\n\n<span style="color:#cba6f7">server</span> {\n    <span style="color:#89b4fa">listen</span> 443 ssl http2;\n    <span style="color:#89b4fa">server_name</span> example.com www.example.com;\n    <span style="color:#89b4fa">root</span> /var/www/html;\n    <span style="color:#89b4fa">index</span> index.php index.html;\n}',
+    };
+    function ftClick(path) { selectedFile = path; renderPage('files') }
+    function ftToggle(path) { expandedDirs[path] = !expandedDirs[path]; renderPage('files') }
+    function renderFileTree(nodes, path = '', depth = 0) {
+      return nodes.map(n => {
+        const fp = path + '/' + n.n;
+        const isExp = expandedDirs[fp];
+        const isSel = selectedFile === fp;
+        let html = `<div class="ft-row${isSel ? ' sel' : ''}" style="padding-left:${depth * 14 + 8}px" onclick="${n.t === 'd' ? 'ftToggle(\'' + fp + '\')' : 'ftClick(\'' + fp + '\')'}" oncontextmenu="ftCtx(event, '${fp}')">` +
+          `<span style="font-size:11px;color:${n.t === 'd' ? 'var(--blue)' : 'var(--text3)'};margin-right:2px">${n.t === 'd' ? (isExp ? '▼' : '▶') : '·'}</span>` +
+          `<span style="font-size:13px">${n.t === 'd' ? (isExp ? '📂' : '📁') : '📄'}</span>` +
+          `<span style="margin-left:4px;font-size:11.5px;flex:1;color:${n.t === 'd' ? 'var(--text)' : 'var(--text2)'}">${n.n}</span>` +
+          (n.sz ? `<span style="font-size:9px;color:var(--text4);margin-left:auto">${n.sz}</span>` : '') +
+          `</div>`;
+        if (n.t === 'd' && isExp && n.ch) html += renderFileTree(n.ch, fp, depth + 1);
+        return html;
+      }).join('');
+    }
+    function renderFiles() {
+      const content = fileContents[selectedFile] || '<span style="color:#6c7086"># Dosya içeriği burada görünecek</span>';
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Dosya Yöneticisi</div><div class="ph-sub">Sunucu dosya sistemi gezgini</div></div>
+    <div style="display:flex;gap:8px">${btn('⬆️ Dosya Yükle', 'p', 'uploadFile()')} ${btn('📁 Yeni Klasör', '', 'newFolder()')}</div>
+  </div>
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:10px">
+    <div class="card"><div class="card-h"><div class="card-t">📁 Dosya Ağacı</div>${btn('+ Yeni', 'p sm', 'uploadFile()')}</div>
+    <div style="padding:6px 0;max-height:500px;overflow-y:auto">${renderFileTree(fileTree)}</div></div>
+    <div class="card"><div class="card-h">
+      <div class="card-t mono" style="font-size:11px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${selectedFile}</div>
+      <div style="display:flex;gap:5px">${btn('📥 İndir', 'sm')} ${btn('✏️ Düzenle', 'sm', 'editFile()')} ${btn('🔐 İzinler', 'sm', 'filePermissions()')} ${btn('🗑️', 'd sm', 'if(confirm(\'Dosyayı silmek istiyor musunuz?\'))alert(\'Dosya silindi.\')')}</div>
+    </div>
+    <div style="background:#070b10;margin:12px;border-radius:var(--r8);padding:12px;min-height:260px">
+      <div style="display:flex;gap:12px">
+        <div class="mono" style="color:#45475a;font-size:11px;text-align:right;user-select:none;line-height:1.7;min-width:20px">
+          ${Array.from({ length: 15 }, (_, i) => `<div>${i + 1}</div>`).join('')}
+        </div>
+        <div class="mono" style="font-size:11px;line-height:1.7;color:#cdd6f4;white-space:pre;overflow-x:auto;flex:1">${content}</div>
+      </div>
+    </div></div>
+  </div>`;
+    }
+    function uploadFile() { openModal('⬆️ Dosya Yükle', `<div class="form-row"><label class="form-label">Hedef Klasör</label><input class="inp" value="${selectedFile.substring(0, selectedFile.lastIndexOf('/')) || '/var/www/html'}"></div><div style="border:2px dashed var(--border2);border-radius:var(--r8);padding:30px;text-align:center;color:var(--text3);margin-bottom:12px;cursor:pointer" onclick="alert('Dosya seçici açılıyor...')">📁 Dosyaları buraya sürükleyin veya tıklayın</div>${btn('Yükle', 'p', 'closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+    function newFolder() { openModal('📁 Yeni Klasör', `<div class="form-row"><label class="form-label">Klasör Adı</label><input class="inp" placeholder="yeni-klasor"></div>${btn('Oluştur', 'p', 'closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+    function editFile() { openModal('✏️ Dosya Düzenle — ' + selectedFile.split('/').pop(), `<textarea class="inp" style="height:200px;font-family:'Courier New',monospace;font-size:11px" placeholder="Dosya içeriği burada..."></textarea><div style="margin-top:10px;display:flex;gap:6px">${btn('💾 Kaydet', 'p', 'alert(\"Kaydedildi!\");closeModal()')} ${btn('İptal', '', 'closeModal()')}</div>`) }
+    function filePermissions() { openModal('🔐 Dosya İzinleri', `<div class="form-row"><label class="form-label">İzin Modu</label><input class="inp mono" value="644" placeholder="644"></div><div style="font-size:11px;color:var(--text3);margin-bottom:12px">644 = Sahip: okuma/yazma, Grup: okuma, Diğer: okuma</div>${btn('Uygula', 'p', 'alert(\"İzinler güncellendi!\");closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+
+    async function deleteDatabase(name) {
+      if (!confirm(`${name} veritabanını silmek istediğinize emin misiniz?`)) return;
+      try {
+        const res = await apiFetch(`/api/databases/${name}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Veritabanı başarıyla silindi', 'success');
+          nav('databases');
+        } else alert('Silme hatası!');
+      } catch (e) { alert(e.message); }
+    }
+
+    async function loadDatabases() {
+      try {
+        const res = await apiFetch('/api/databases');
+        return await res.json();
+      } catch (e) { return []; }
+    }
+
+    function renderDatabases() {
+      const tab = window._dbTab || 'list';
+
+      let tabContent = '';
+      if (tab === 'list') {
+        tabContent = `<div id="db-list-container">Yükleniyor...</div>`;
+        loadDatabases().then(dbs => {
+          const el = document.getElementById('db-list-container');
+          if (!el) return;
+          el.innerHTML = `
+          <div class="card"><div class="card-h"><div class="card-t">Veritabanları</div>${btn('+ Yeni Veritabanı', 'p', 'addDatabase()')}</div>
+          ${dbs.map(d => `
+          <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">${d.name}</div>
+              <div class="mono" style="font-size:10px;color:var(--text3)">MySQL 8.0 · ${d.size || '0 MB'}</div>
+            </div>
+            ${btn('🗑️', 'd sm', `deleteDatabase('${d.name}')`)}
+          </div>`).join('')}
+          </div>`;
+        });
+      } else if (tab === 'query') {
+        tabContent = `
+        <div class="card"><div class="card-h"><div class="card-t">⌨️ SQL Editörü</div>
+          <div style="display:flex;gap:6px">
+            <select class="inp" id="query-db-select" style="width:auto"></select>
+            ${btn('▶ Çalıştır', 'p', 'runQuery()')}
+          </div></div>
+        <div class="card-b"><textarea class="inp mono" id="sql-editor" style="height:120px" placeholder="SQL..."></textarea></div></div>`;
+        loadDatabases().then(dbs => {
+          const el = document.getElementById('query-db-select');
+          if (el) el.innerHTML = dbs.map(d => `<option>${d.name}</option>`).join('');
+        });
+      } else {
+        tabContent = `<div class="alert i">Kullanıcı yönetimi yakında...</div>`;
+      }
+
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Veritabanı Yönetimi</div><div class="ph-sub">MySQL 8.0 Sunucusu</div></div>
+  </div>
+  <div class="tabs">
+    ${[['list', '🗄️ Veritabanları'], ['query', '⌨️ SQL Editörü'], ['users', '👤 Kullanıcılar']].map(([t, l]) =>
+        `<div class="tab${tab === t ? ' a' : ''}" onclick="window._dbTab='${t}';nav('databases')">${l}</div>`).join('')}
+  </div>
+  ${tabContent}`;
+    }
+
+    async function saveDatabase() {
+      const name = document.getElementById('db-name').value;
+      if (!name) return;
+      try {
+        const res = await apiFetch('/api/databases', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        if (res.ok) {
+          showToast('Veritabanı oluşturuldu', 'success');
+          closeModal();
+          nav('databases');
+        }
+      } catch (e) { alert(e.message); }
+    }
+
+    function addDatabase() { openModal('+ Yeni Veritabanı', `<div class="form-row"><label class="form-label">Veritabanı Adı</label><input class="inp" id="db-name"></div>${btn('Oluştur', 'p', 'saveDatabase()')}`) }
+    function openPhpMyAdmin(db) { alert(`phpMyAdmin: ${db}`) }
+    function backupDb(db) { alert(`Yedekleme: ${db}`) }
+    function runQuery() { alert('Sorgu çalıştırıldı (simüle)') }
+    function clearQuery() { document.getElementById('sql-editor').value = '' }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: EMAIL
+    // ══════════════════════════════════════════════
+    function renderEmail() {
+      const tab = window._emailTab || 'accounts';
+      const colors = ['var(--blue)', 'var(--green)', 'var(--purple)', 'var(--orange)'];
+
+      let tabContent = '';
+      if (tab === 'accounts') {
+        tabContent = `
+        <div class="card"><div class="card-h"><div class="card-t">📧 E-posta Hesapları</div></div>
+        ${emailAccounts.map((e, i) => {
+          const used = Math.round(e.quota * e.usedPct / 100);
+          return `<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">${e.user}@${e.domain}</div>
+              ${pbHtml(e.usedPct)}
+              <div style="font-size:10px;color:var(--text4)">${used} MB / ${e.quota} MB</div>
+            </div>
+            ${btn('🔑', 'sm', `changeEmailPass('${e.user}@${e.domain}')`)}
+            ${btn('🗑️', 'd sm', `if(confirm('Silinsin mi?')){emailAccounts.splice(${i},1);nav('email')}`)}
+          </div>`;
+        }).join('')}</div>`;
+      } else if (tab === 'spam') {
+        tabContent = `<div class="card"><div class="card-h"><div class="card-t">🛡️ Spam Koruması</div></div><div class="card-b">SpamAssassin aktif.</div></div>`;
+      } else {
+        tabContent = `<div class="card"><div class="card-h"><div class="card-t">↗️ Yönlendirmeler</div></div><div class="card-b">Henüz yönlendirme yok.</div></div>`;
+      }
+
+      return `
+  <div class="ph">
+    <div><div class="ph-title">E-posta Yönetimi</div><div class="ph-sub">Hesap ve servis yönetimi</div></div>
+    ${btn('+ E-posta Hesabı Ekle', 'p', 'addEmail()')}
+  </div>
+  <div class="tabs">
+    ${[['accounts', '📧 Hesaplar'], ['spam', '🛡️ Spam Koruması'], ['forwarders', '↗️ Yönlendirme']].map(([t, l]) =>
+        `<div class="tab${tab === t ? ' a' : ''}" onclick="window._emailTab='${t}';nav('email')">${l}</div>`).join('')}
+  </div>
+  ${tabContent}`;
+    }
+    function addEmail() { openModal('+ E-posta Hesabı Ekle', `<div class="form-row"><label class="form-label">Kullanıcı Adı</label><input class="inp" id="email-user" placeholder="kullanici"></div><div class="form-row"><label class="form-label">Domain</label><select class="inp" id="email-domain"><option>example.com</option><option>shop.example.com</option></select></div><div class="form-row"><label class="form-label">Şifre</label><input class="inp" type="password" id="email-pass" placeholder="Güçlü şifre"></div><div class="form-row"><label class="form-label">Kota (MB)</label><input class="inp" id="email-quota" value="500" type="number"></div>${btn('Oluştur', 'p', `const u=document.getElementById('email-user').value;const d=document.getElementById('email-domain').value;const q=document.getElementById('email-quota').value;if(u){emailAccounts.push({user:u,domain:d,quota:parseInt(q),usedPct:0,status:'ok'});closeModal();nav('email')}else alert('Kullanıcı adı gerekli')`)} ${btn('İptal', '', 'closeModal()')}`) }
+    function changeEmailPass(addr) { openModal(`🔑 Şifre Değiştir — ${addr}`, `<div class="form-row"><label class="form-label">Yeni Şifre</label><input class="inp" type="password" placeholder="Güçlü şifre"></div><div class="form-row"><label class="form-label">Şifre Tekrar</label><input class="inp" type="password" placeholder="Şifreyi tekrar girin"></div>${btn('Değiştir', 'p', 'alert(\"Şifre değiştirildi!\");closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+    function addForwarder() { openModal('+ Yönlendirme', `<div class="form-row"><label class="form-label">Kaynak</label><input class="inp" placeholder="info@example.com"></div><div class="form-row"><label class="form-label">Hedef</label><input class="inp" placeholder="hedef@gmail.com"></div>${btn('Ekle', 'p', 'closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: CRON
+    // ══════════════════════════════════════════════
+    function renderCron() {
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Cron Job Yöneticisi</div><div class="ph-sub">Zamanlanmış görevler — crontab yönetimi</div></div>
+    ${btn('+ Cron Job Ekle', 'p', 'addCron()')}
+  </div>
+  <div class="g3">
+    <div class="sc"><div class="sc-label">⏰ Toplam Job</div><div class="sc-val" style="color:var(--blue)">${cronJobs.length}</div></div>
+    <div class="sc"><div class="sc-label">✅ Başarılı</div><div class="sc-val" style="color:var(--green)">${cronJobs.filter(c => c.status === 'ok').length}</div></div>
+    <div class="sc"><div class="sc-label">❌ Hata</div><div class="sc-val" style="color:var(--red)">${cronJobs.filter(c => c.status === 'err').length}</div></div>
+  </div>
+  <div class="card"><div class="card-h"><div class="card-t">⏰ Aktif Cron Joblar</div></div>
+  <div style="display:grid;grid-template-columns:140px 1fr 90px 80px 90px;gap:8px;padding:7px 14px;border-bottom:1px solid var(--border)">
+    ${['ZAMANLAMA', 'KOMUT', 'SON ÇALIŞMA', 'DURUM', ''].map(h => `<span style="font-size:9px;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.5px">${h}</span>`).join('')}
+  </div>
+  ${cronJobs.map((c, i) => `
+  <div style="display:grid;grid-template-columns:140px 1fr 90px 80px 90px;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+    <span class="mono" style="font-size:11px;color:var(--blue)">${c.expr}</span>
+    <span class="mono" style="font-size:10.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.cmd}">${c.cmd}</span>
+    <span style="font-size:10.5px;color:var(--text3)">${c.last}</span>
+    ${badge(c.status === 'ok' ? '✓ Başarılı' : '✗ Hata', c.status)}
+    <div style="display:flex;gap:4px">
+      ${btn('▶', 'sm', `runCron(${i})`)}
+      ${btn('✏️', 'sm', `editCron(${i})`)}
+      ${btn('🗑️', 'd sm', `if(confirm('Bu cron job silinsin mi?')){cronJobs.splice(${i},1);nav('cron')}`)}
+    </div>
+  </div>`).join('')}
+  </div>
+  <div class="card" style="margin-top:10px"><div class="card-h"><div class="card-t">⚡ Hızlı Şablonlar</div></div>
+  <div class="card-b" style="display:flex;flex-wrap:wrap;gap:8px">
+    ${[['Her gece 02:00', '0 2 * * *'], ['Her 5 dakika', '*/5 * * * *'], ['Haftalık Pazar', '0 0 * * 0'], ['6 saatte bir', '0 */6 * * *'], ['Her ay 1.', '0 0 1 * *'], ['Sistem başlangıcı', '@reboot']].map(([l, e]) =>
+        `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:8px 12px;cursor:pointer;font-size:11px" onmouseenter="this.style.background='var(--bg4)'" onmouseleave="this.style.background='var(--bg3)'" onclick="addCronTemplate('${e}')">
+      <div style="font-weight:600;color:var(--text);margin-bottom:2px">${l}</div>
+      <div class="mono" style="font-size:10px;color:var(--blue)">${e}</div>
+    </div>`).join('')}
+  </div></div>`;
+    }
+    function addCron() { openModal('+ Yeni Cron Job', `<div class="form-row"><label class="form-label">Cron İfadesi</label><input class="inp mono" id="cron-expr" placeholder="0 2 * * *" onkeyup="document.getElementById('cron-human').textContent=humanCron(this.value)"><div id="cron-human" style="font-size:10px;color:var(--green);margin-top:4px;font-family:'Share Tech Mono',monospace"></div></div><div class="form-row"><label class="form-label">Komut</label><input class="inp mono" id="cron-cmd" placeholder="/usr/bin/php /var/www/cron.php"></div><div class="alert i" style="margin-bottom:8px">ℹ️ Format: dakika saat gün ay haftanın-günü</div>${btn('💾 Kaydet', 'p', `const e=document.getElementById('cron-expr').value;const c=document.getElementById('cron-cmd').value;if(e&&c){cronJobs.push({expr:e,cmd:c,last:'Henüz çalışmadı',status:'ok'});closeModal();nav('cron')}else alert('Tüm alanları doldurun')`)} ${btn('İptal', '', 'closeModal()')}`) }
+    function addCronTemplate(e) { openModal('+ Cron Job', `<div class="form-row"><label class="form-label">Zamanlama</label><input class="inp mono" id="ct-expr" value="${e}" onkeyup="document.getElementById('ct-human').textContent=humanCron(this.value)"><div id="ct-human" style="font-size:10px;color:var(--green);margin-top:4px;font-family:'Share Tech Mono',monospace">${humanCron(e)}</div></div><div class="form-row"><label class="form-label">Komut</label><input class="inp mono" id="ct-cmd" placeholder="/path/to/script.sh"></div>${btn('Ekle', 'p', `const e2=document.getElementById('ct-expr').value;const c=document.getElementById('ct-cmd').value;if(c){cronJobs.push({expr:e2,cmd:c,last:'Henüz çalışmadı',status:'ok'});closeModal();nav('cron')}else alert('Komut gerekli')`)} ${btn('İptal', '', 'closeModal()')}`) }
+    function runCron(i) { if (confirm(`"${cronJobs[i].cmd}" şimdi çalıştırılsın mı?`)) alert('Cron job çalıştırıldı.') }
+    function editCron(i) { const c = cronJobs[i]; openModal('✏️ Cron Job Düzenle', `<div class="form-row"><label class="form-label">Zamanlama</label><input class="inp mono" id="ec-expr" value="${c.expr}"></div><div class="form-row"><label class="form-label">Komut</label><input class="inp mono" id="ec-cmd" value="${c.cmd}"></div>${btn('💾 Kaydet', 'p', `cronJobs[${i}].expr=document.getElementById('ec-expr').value;cronJobs[${i}].cmd=document.getElementById('ec-cmd').value;closeModal();nav('cron')`)} ${btn('İptal', '', 'closeModal()')}`) }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: BACKUP
+    // ══════════════════════════════════════════════
+    function renderBackup() {
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Yedekleme Merkezi</div><div class="ph-sub">Otomatik ve manuel yedekleme yönetimi</div></div>
+    <div style="display:flex;gap:8px">${btn('💾 Manuel Yedekle', 'p', 'manualBackup()')} ${btn('⚙️ Ayarlar', '', 'backupSettings()')}</div>
+  </div>
+  <div class="alert s">✅ Son yedekleme başarılı: Bugün 03:00 — site_backup (3.2 GB) ve MySQL (1.8 GB)</div>
+  <div class="g4">
+    <div class="sc"><div class="sc-label">📦 Toplam Yedek</div><div class="sc-val" style="color:var(--blue)">${backups.length}</div></div>
+    <div class="sc"><div class="sc-label">💾 Yedek Boyutu</div><div class="sc-val" style="color:var(--orange)">11.7 GB</div></div>
+    <div class="sc"><div class="sc-label">✅ Başarılı</div><div class="sc-val" style="color:var(--green)">${backups.filter(b => b.status === 'ok').length}</div></div>
+    <div class="sc"><div class="sc-label">❌ Başarısız</div><div class="sc-val" style="color:var(--red)">${backups.filter(b => b.status === 'err').length}</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-h"><div class="card-t">⚙️ Yedekleme Ayarları</div></div>
+    <div class="card-b">
+      ${[['Site Yedekleme', 'Günlük 03:00', 'ok'], ['Veritabanı Yedekleme', 'Günlük 01:30', 'err'], ['Uzak Depolama (S3)', 'Senkronize', 'ok'], ['Yedek Saklama', '30 gün', 'ok']].map(([l, v, s]) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px">
+        <div>
+          <div style="font-weight:500;color:var(--text);margin-bottom:1px">${l}</div>
+          <div style="font-size:10.5px;color:var(--text3)">${v}</div>
+        </div>
+        ${badge(s === 'ok' ? 'Aktif' : 'Hata', s)}
+      </div>`).join('')}
+      <div style="margin-top:12px">${btn('⚙️ Konfigüre Et', 'p lg w-full', 'backupSettings()')}</div>
+    </div></div>
+    <div class="card"><div class="card-h"><div class="card-t">💿 Depolama Kullanımı</div></div>
+    <div class="card-b">
+      <div style="text-align:center;margin-bottom:12px">${ring(58, 'var(--orange)', 80)}</div>
+      ${[['Site Yedekleri', '6.3 GB', 63, 'var(--blue)'], ['MySQL Yedekleri', '3.5 GB', 35, 'var(--green)'], ['Konfigürasyon', '1.9 GB', 19, 'var(--purple)']].map(([l, v, p, c]) => `
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:3px"><span>${l}</span><span class="mono">${v}</span></div>
+        ${pbHtml(p, c)}
+      </div>`).join('')}
+    </div></div>
+  </div>
+  <div class="card"><div class="card-h"><div class="card-t">📂 Yedek Arşivi</div></div>
+  ${backups.map(b => `
+  <div class="bk-row" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+    <span style="font-size:18px">${b.type === 'Site' ? '🌐' : '🗄️'}</span>
+    <div style="flex:1">
+      <div style="font-weight:500;font-size:12px;margin-bottom:1px">${b.name}</div>
+      <div style="font-size:10.5px;color:var(--text3)">${b.date}</div>
+    </div>
+    <span class="mono" style="font-size:11px;color:var(--text2);margin-right:10px">${b.size}</span>
+    ${badge(b.status === 'ok' ? '✓ Başarılı' : '✗ Hata', b.status)}
+    ${btn('📥 İndir', 'sm', `downloadBackup('${b.name}')`)} ${btn('♻️ Geri Yükle', 'sm p', `restoreBackup('${b.name}')`)} ${btn('🗑️', 'd sm')}
+  </div>`).join('')}
+  </div>`;
+    }
+    function manualBackup() { if (confirm('Manuel yedekleme başlatılsın mı?')) alert('Yedekleme başlatıldı. İşlem tamamlandığında bildirim alacaksınız.') }
+    function backupSettings() { openModal('⚙️ Yedekleme Ayarları', `<div class="form-row"><label class="form-label">Site Yedek Saati</label><input class="inp" type="time" value="03:00"></div><div class="form-row"><label class="form-label">MySQL Yedek Saati</label><input class="inp" type="time" value="01:30"></div><div class="form-row"><label class="form-label">Saklama Süresi (gün)</label><input class="inp" type="number" value="30"></div><div class="form-row"><label class="form-label">S3 Bucket</label><input class="inp" placeholder="my-server-backups"></div>${btn('💾 Kaydet', 'p', 'alert(\"Ayarlar kaydedildi!\");closeModal()')} ${btn('İptal', '', 'closeModal()')}`) }
+    function downloadBackup(n) { alert(`İndiriliyor: ${n}`) }
+    function restoreBackup(n) { if (confirm(`${n} dosyasından geri yüklemek istiyor musunuz?\n\nBu işlem mevcut verilerin üzerine yazacak!`)) alert('Geri yükleme başlatıldı...') }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: SECURITY
+    // ══════════════════════════════════════════════
+    function renderSecurity() {
+      const tab = window._secTab || 'fw';
+      const f2bBanned = [
+        { ip: '185.220.101.44', svc: 'SSH', attempts: 47, ban: '24 saat' },
+        { ip: '103.21.244.15', svc: 'HTTP', attempts: 312, ban: 'Kalıcı' },
+        { ip: '45.33.18.92', svc: 'FTP', attempts: 89, ban: '1 saat' },
+        { ip: '194.26.178.11', svc: 'SSH', attempts: 23, ban: '6 saat' },
+        { ip: '82.65.88.12', svc: 'SSH', attempts: 156, ban: 'Kalıcı' },
+      ];
+      const audit = [
+        ['SSH Kimlik Doğrulama', 'Parola girişi kapalı', 'ok'],
+        ['Root Uzak Giriş', 'PermitRootLogin no', 'ok'],
+        ['Güvenlik Duvarı', 'iptables aktif', 'ok'],
+        ['SSL Sertifikaları', '1 sertifika yakında bitiyor', 'warn']
+      ];
+
+      let tabContent = '';
+      if (tab === 'fw') {
+        tabContent = `
+        <div class="card"><div class="card-h"><div class="card-t">🔥 Güvenlik Duvarı Kuralları</div></div>
+        <table class="tbl"><thead><tr><th>Kural</th><th>Port</th><th>IP</th><th>Durum</th></tr></thead>
+        <tbody>${fwRules.map((r, i) => `<tr><td>${r.rule}</td><td>${r.port}</td><td>${r.ip}</td><td>${badge(r.action, r.action === 'ALLOW' ? 'ok' : 'err')}</td></tr>`).join('')}</tbody>
+        </table></div>`;
+      } else if (tab === 'f2b') {
+        tabContent = `<div class="card"><div class="card-h"><div class="card-t">🛡️ Fail2ban</div></div><div class="card-b">Fail2ban aktif. ${f2bBanned.length} IP engellendi.</div></div>`;
+      } else {
+        tabContent = `<div class="card"><div class="card-h"><div class="card-t">📋 Denetim</div></div><div class="card-b">Sistem taraması yapılıyor...</div></div>`;
+      }
+
+      return `
+  <div class="ph">
+    <div><div class="ph-title">Güvenlik Merkezi</div><div class="ph-sub">Firewall ve güvenlik yönetimi</div></div>
+  </div>
+  <div class="tabs">
+    ${[['fw', '🔥 Firewall'], ['f2b', '🛡️ Fail2ban'], ['audit', '📋 Denetim']].map(([t, l]) =>
+        `<div class="tab${tab === t ? ' a' : ''}" onclick="window._secTab='${t}';nav('security')">${l}</div>`).join('')}
+  </div>
+  ${tabContent}`;
+    }
+    function toggleFw(i) {
+      fwRules[i].enabled = !fwRules[i].enabled;
+      const tg = document.getElementById('fw-' + i)?.querySelector('.tg');
+      if (tg) tg.classList.toggle('on', fwRules[i].enabled);
+    }
+    function addFwRule() { openModal('+ Firewall Kuralı', `< div class="form-row" ><label class="form-label">Kural Adı</label><input class="inp" id="fw-name" placeholder="Kural adı"></div><div class="form-row"><label class="form-label">Port</label><input class="inp" id="fw-port" placeholder="80 veya *"></div><div class="form-row"><label class="form-label">IP / Kaynak</label><input class="inp" id="fw-ip" placeholder="0.0.0.0/0"></div><div class="form-row"><label class="form-label">Eylem</label><select class="inp" id="fw-action"><option>ALLOW</option><option>BLOCK</option></select></div>${btn('Ekle', 'p', `const n=document.getElementById('fw-name').value;const p=document.getElementById('fw-port').value;const ip=document.getElementById('fw-ip').value;const a=document.getElementById('fw-action').value;if(n&&p&&ip){fwRules.push({rule:n,port:p,ip:ip,action:a,enabled:true,hits:'0'});closeModal();nav('security')}else alert('Tüm alanları doldurun')`)} ${btn('İptal', '', 'closeModal()')} `) }
+    function editFwRule(i) { const r = fwRules[i]; openModal('✏️ Kural Düzenle', `< div class="form-row" ><label class="form-label">Port</label><input class="inp" id="efw-port" value="${r.port}"></div><div class="form-row"><label class="form-label">IP</label><input class="inp" id="efw-ip" value="${r.ip}"></div>${btn('Kaydet', 'p', `fwRules[${i}].port=document.getElementById('efw-port').value;fwRules[${i}].ip=document.getElementById('efw-ip').value;closeModal();nav('security')`)} ${btn('İptal', '', 'closeModal()')} `) }
+    function viewIptables() { openModal('iptables -L OUTPUT', `< div style = "background:#070b10;border-radius:var(--r8);padding:12px;font-family:'Courier New',monospace;font-size:10.5px;color:#cdd6f4;line-height:1.7;max-height:240px;overflow-y:auto" ><div style="color:#89b4fa">Chain INPUT (policy DROP)</div><div style="color:#a6e3a1">ACCEPT     tcp  --  10.0.0.0/8    anywhere    dpt:ssh</div><div style="color:#a6e3a1">ACCEPT     tcp  --  anywhere      anywhere    dpt:http</div><div style="color:#a6e3a1">ACCEPT     tcp  --  anywhere      anywhere    dpt:https</div><div style="color:#f38ba8">DROP       tcp  --  103.21.244.0/22  anywhere</div><div style="color:#f38ba8">DROP       all  --  185.220.101.0/24 anywhere</div></div > `) }
+    function banIp() { openModal('🚫 IP Engelle', `< div class="form-row" ><label class="form-label">IP Adresi</label><input class="inp mono" id="ban-ip" placeholder="192.168.1.1"></div><div class="form-row"><label class="form-label">Süre</label><select class="inp"><option>1 saat</option><option>6 saat</option><option>24 saat</option><option>Kalıcı</option></select></div>${btn('🚫 Engelle', 'd', 'closeModal()')} ${btn('İptal', '', 'closeModal()')} `) }
+    function runSecurityScan() { alert('Güvenlik taraması başlatıldı. Bu işlem birkaç dakika sürebilir.') }
+    function editF2bConfig() { openModal('⚙️ Fail2ban Konfigürasyonu', `< div class="form-row" ><label class="form-label">Max Deneme (maxretry)</label><input class="inp" value="5" type="number"></div><div class="form-row"><label class="form-label">Banlama Süresi — saniye (bantime)</label><input class="inp" value="86400" type="number"></div><div class="form-row"><label class="form-label">Bulma Penceresi — saniye (findtime)</label><input class="inp" value="600" type="number"></div>${btn('Kaydet', 'p', 'alert(\"Konfigürasyon güncellendi!\");closeModal()')} ${btn('İptal', '', 'closeModal()')} `) }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: TERMINAL
+    // ══════════════════════════════════════════════
+    let termHistory = [];
+    let cmdHistory = [];
+    let cmdIdx = -1;
+    let termCwd = '/';
+    const COMP_CMDS = ['ls', 'cd', 'pwd', 'whoami', 'npm', 'node', 'python', 'git', 'cat', 'df', 'free', 'uptime', 'systemctl', 'clear'];
+    function renderTerminal() {
+      return `
+      < div class="ph" >
+    <div><div class="ph-title">Web Terminal</div><div class="ph-sub">Tarayıcı üzerinden SSH — root@srv1.example.com</div></div>
+    <div style="display:flex;gap:8px">${badge('● Bağlandı', 'ok')} ${btn('✕ Bağlantıyı Kes', 'd', 'if(confirm(\"Bağlantıyı kesmek istiyor musunuz?\"))alert(\"Bağlantı kesildi.\")')}</div>
+  </div >
+      <div class="card"><div class="card-h">
+        <div style="display:flex;gap:6px">
+          <div style="width:11px;height:11px;border-radius:50%;background:var(--red)"></div>
+          <div style="width:11px;height:11px;border-radius:50%;background:var(--yellow)"></div>
+          <div style="width:11px;height:11px;border-radius:50%;background:var(--green)"></div>
+        </div>
+        <div style="font-size:12px;font-weight:600;font-family:monospace">root@srv1.example.com — bash</div>
+        <span></span>
+      </div>
+        <div class="term" id="term-output" onclick="document.getElementById('term-input').focus()"></div>
+        <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap">
+          ${['ls -la', 'df -h', 'free -h', 'uptime', 'nginx -t', 'ps aux', 'crontab -l', 'help'].map(c =>
+        `<button class="btn sm mono" onclick="termRunCmd('${c}')">${c}</button>`).join('')}
+        </div></div>`;
+    }
+    function initTerminal() {
+      termHistory = [
+        { type: 'sys', t: 'ServerPanel Web Terminal — Ubuntu 22.04.3 LTS' },
+        { type: 'sys', t: 'Bağlantı: root@srv1.example.com — PTY açıldı' },
+        { type: 'sys', t: "Yardım için 'help' yazın. Kaçmak için Ctrl+C." },
+        { type: 'br' },
+      ];
+      renderTerm();
+      setTimeout(() => { const i = document.getElementById('term-input'); if (i) i.focus(); }, 100);
+    }
+    function renderTerm() {
+      const el = document.getElementById('term-output');
+      if (!el) return;
+      let html = termHistory.map(l => {
+        if (l.type === 'br') return '<div style="height:4px"></div>';
+        if (l.type === 'sys') return `< div style = "color:#6c7086" > ${l.t}</div > `;
+        if (l.type === 'in') return `< div ><span style="color:#a6e3a1">root@srv1</span><span style="color:#89b4fa">:${l.cwd}# </span><span style="color:#cdd6f4">${l.t}</span></div > `;
+        if (l.type === 'err') return `< div style = "color:#f38ba8" > ${l.t}</div > `;
+        if (l.type === 'warn') return `< div style = "color:#f9e2af" > ${l.t}</div > `;
+        return `< div style = "color:#cdd6f4;white-space:pre" > ${l.t}</div > `;
+      }).join('');
+      html += `< div class="t-in" ><span style="color:#a6e3a1">root@srv1</span><span style="color:#89b4fa">:${termCwd}# </span><input id="term-input" type="text" autocomplete="off" spellcheck="false" onkeydown="termKey(event)"></div>`;
+      el.innerHTML = html;
+      el.scrollTop = el.scrollHeight;
+      const inp = document.getElementById('term-input');
+      if (inp) inp.focus();
+    }
+    function termKey(e) {
+      if (e.key === 'Enter') { const v = e.target.value.trim(); termRunCmd(v); e.target.value = ''; }
+      else if (e.key === 'ArrowUp') { cmdIdx = Math.min(cmdIdx + 1, cmdHistory.length - 1); e.target.value = cmdHistory[cmdIdx] || ''; }
+      else if (e.key === 'ArrowDown') { cmdIdx = Math.max(cmdIdx - 1, -1); e.target.value = cmdIdx === -1 ? '' : cmdHistory[cmdIdx] || ''; }
+      else if (e.key === 'c' && e.ctrlKey) { termHistory.push({ type: 'in', cwd: termCwd, t: e.target.value + ' ^C' }, { type: 'err', t: 'Interrupted' }); renderTerm(); }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        const v = e.target.value;
+        const cmds = COMP_CMDS.filter(c => c.startsWith(v));
+        if (cmds.length === 1) e.target.value = cmds[0];
+      }
+    }
+
+    async function termRunCmd(cmd) {
+      if (!cmd) return;
+      cmdHistory.unshift(cmd); cmdIdx = -1;
+      termHistory.push({ type: 'in', cwd: termCwd, t: cmd });
+
+      if (cmd === 'clear') {
+        termHistory = []; renderTerm(); return;
+      }
+
+      try {
+        const res = await apiFetch('/api/terminal/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cmd, cwd: termCwd })
+        });
+        const data = await res.json();
+
+        if (data.cwd) termCwd = data.cwd;
+
+        if (data.out) {
+          data.out.replace(/\\r/g, '').split('\\n').filter(l => l).forEach(line => {
+            termHistory.push({ type: 'out', t: line });
+          });
+        }
+        if (data.err) {
+          data.err.replace(/\\r/g, '').split('\\n').filter(l => l).forEach(line => {
+            termHistory.push({ type: 'err', t: line });
+          });
+        }
+      } catch (e) {
+        termHistory.push({ type: 'err', t: 'Backend API hatası: ' + e.message });
+      }
+      renderTerm();
+    }
+
+    // ══════════════════════════════════════════════
+    //  PAGE: LOGS
+    // ══════════════════════════════════════════════
+    function renderLogs() {
+      const allLogs = [
+        { t: '14:28:02', l: 'OK', src: 'SSL', m: 'Sertifika yenilendi: example.com (Let\'s Encrypt)' },
+        { t: '14:25:11', l: 'INFO', src: 'SSH', m: 'Yeni oturum: 192.168.1.44 (anahtar doğrulama)' },
+        { t: '14:22:45', l: 'WARN', src: 'PHP-FPM', m: 'Yüksek CPU kullanımı: %87 (eşik: %80)' },
+        { t: '14:20:03', l: 'INFO', src: 'MySQL', m: 'Yedekleme tamamlandı: shop_production (1.8 GB)' },
+        { t: '14:18:55', l: 'ERROR', src: 'fail2ban', m: '185.220.101.44 SSH brute-force engellendi (47 deneme)' },
+        { t: '14:15:22', l: 'OK', src: 'Cron', m: 'certbot renew — başarılı çalıştı' },
+        { t: '14:12:08', l: 'INFO', src: 'Nginx', m: 'Konfigürasyon yeniden yüklendi (reload)' },
+        { t: '14:08:44', l: 'WARN', src: 'Disk', m: '/backup kullanımı %87 eşiğini geçti (890 GB / 2 TB)' },
+        { t: '14:05:31', l: 'ERROR', src: 'Cron', m: 'mysql_backup.sh hata kodu 1: İzin reddedildi' },
+        { t: '14:02:17', l: 'INFO', src: 'Redis', m: 'Bellek kullanımı: 18 MB / 512 MB (%3.5)' },
+        { t: '13:58:44', l: 'INFO', src: 'Nginx', m: 'Yeni bağlantı: 203.0.113.45 → 200 OK (0.042s)' },
+        { t: '13:55:12', l: 'WARN', src: 'MySQL', m: 'Yavaş sorgu: SELECT * FROM analytics (4.2s)' },
+        { t: '13:50:00', l: 'OK', src: 'fail2ban', m: 'Otomatik banlama kaldırıldı: 10.0.0.5 (süre doldu)' },
+        { t: '13:45:33', l: 'INFO', src: 'PHP-FPM', m: 'Pool www yeniden başlatıldı (SIGTERM alındı)' },
+        { t: '13:40:00', l: 'ERROR', src: 'Dovecot', m: 'Servis başlatılamadı: Konfigürasyon hatası' },
+      ];
+      const filter = window._logFilter || 'ALL';
+      const filtered = filter === 'ALL' ? allLogs : allLogs.filter(l => l.l === filter);
+      const lcol = { OK: 'var(--green)', INFO: 'var(--blue)', WARN: 'var(--yellow)', ERROR: 'var(--red)' };
+      return `
+      < div class="ph" >
+    <div><div class="ph-title">Sistem Logları</div><div class="ph-sub">Sunucu ve servis günlükleri — gerçek zamanlı izleme</div></div>
+    <div style="display:flex;gap:8px">${btn('📥 Log İndir')} ${btn('🗑️ Logları Temizle', 'd', 'if(confirm(\"Logları temizlemek istiyor musunuz?\"))alert(\"Temizlendi.\")')}</div>
+  </div >
+  <div class="g4">
+    ${[['OK', 'ok', allLogs.filter(l => l.l === 'OK').length], ['INFO', 'info', allLogs.filter(l => l.l === 'INFO').length], ['WARN', 'warn', allLogs.filter(l => l.l === 'WARN').length], ['ERROR', 'err', allLogs.filter(l => l.l === 'ERROR').length]].map(([l, c, v]) => `
+    <div class="sc" style="cursor:pointer" onclick="window._logFilter='${l}';nav('logs')">
+      <div class="sc-label">${badge(l, c)}</div>
+      <div class="sc-val" style="font-size:20px">${v}</div>
+    </div>`).join('')}
+  </div>
+  <div class="card"><div class="card-h">
+    <div class="card-t">📋 Sistem Günlükleri</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <select class="inp" style="width:auto;font-size:11px" onchange="window._logFilter=this.value;nav('logs')">
+        <option value="ALL" ${filter === 'ALL' ? 'selected' : ''}>Tümü</option>
+        <option value="OK" ${filter === 'OK' ? 'selected' : ''}>OK</option>
+        <option value="INFO" ${filter === 'INFO' ? 'selected' : ''}>INFO</option>
+        <option value="WARN" ${filter === 'WARN' ? 'selected' : ''}>WARN</option>
+        <option value="ERROR" ${filter === 'ERROR' ? 'selected' : ''}>ERROR</option>
+      </select>
+      <select class="inp" style="width:auto;font-size:11px">
+        <option>Tüm Servisler</option><option>Nginx</option><option>MySQL</option><option>PHP-FPM</option><option>fail2ban</option>
+      </select>
+    </div>
+  </div>
+  <div style="background:#070b10;font-family:'Courier New',monospace;font-size:11.5px;line-height:1.7;max-height:480px;overflow-y:auto;padding:10px 14px">
+    ${filtered.map(l => `
+    <div style="display:flex;gap:8px;padding:3px 0;border-bottom:1px solid rgba(30,37,48,.6)">
+      <span style="color:#45475a;min-width:58px;flex-shrink:0">${l.t}</span>
+      <span style="font-weight:700;min-width:46px;color:${lcol[l.l] || 'var(--text)'};flex-shrink:0">[${l.l}]</span>
+      <span style="color:#89b4fa;min-width:70px;flex-shrink:0">[${l.src}]</span>
+      <span style="color:#a6adc8">${l.m}</span>
+    </div>`).join('')}
+    ${filtered.length === 0 ? '<div style="color:#6c7086;text-align:center;padding:20px">Kayıt bulunamadı</div>' : ''}
+  </div></div>`;
+    }
+
+    // ── CLICK OUTSIDE & CONTEXT MENU ──
+    let ctxTarget = '';
+    function ftCtx(e, path) {
+      e.preventDefault();
+      ctxTarget = path;
+      const menu = document.getElementById('ctx-menu');
+      menu.style.left = e.clientX + 'px';
+      menu.style.top = e.clientY + 'px';
+      menu.classList.add('show');
+    }
+    function ctxAction(action) {
+      const menu = document.getElementById('ctx-menu');
+      menu.classList.remove('show');
+      if (action === 'open') { ftClick(ctxTarget); }
+      else if (action === 'edit') { selectedFile = ctxTarget; editFile(); }
+      else if (action === 'perms') { selectedFile = ctxTarget; filePermissions(); }
+      else if (action === 'download') { showToast(`${ctxTarget} indiriliyor...`, 'success'); }
+      else if (action === 'delete') {
+        if (confirm(`${ctxTarget} silinsin mi ? `)) showToast(`${ctxTarget} silindi.`, 'error');
+      }
+    }
+
+    document.addEventListener('click', function (e) {
+      const menu = document.getElementById('ctx-menu');
+      if (menu && !e.target.closest('.ctx-menu')) menu.classList.remove('show');
+
+      if (!e.target.closest('.notif-panel') && !e.target.closest('.notif-btn') &&
+        !e.target.closest('.settings-panel') && !e.target.closest('.tb-btn')) {
+        closeAllPanels();
+      }
+    });
+
+    // ── KEYBOARD SHORTCUTS ──
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); document.querySelector('.search-box input')?.focus(); }
+      if (e.key === 'Escape') { closeAllPanels(); closeModal(); }
+    });
+
+    // ── BOOT ──
+    initData();
+    nav('overview');
+
+    // Auto-refresh metrics every 30s
+    setInterval(() => { if (currentPage === 'overview') nav('overview'); }, 30000);
+  </script>
+
+  <!-- MATRIX RAIN -->
+  <canvas id="matrix-bg"
+    style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:.055"></canvas>
+
+  <!-- HUD CORNER DECORATIONS -->
+  <div id="hud-tl"
+    style="position:fixed;top:0;left:0;width:120px;height:120px;pointer-events:none;z-index:9990;opacity:.5">
+    <svg width="120" height="120">
+      <polyline points="0,60 0,0 60,0" fill="none" stroke="#00ccff" stroke-width="1" />
+      <circle cx="0" cy="0" r="3" fill="#00ccff" />
+    </svg>
+  </div>
+  <div id="hud-tr"
+    style="position:fixed;top:0;right:0;width:120px;height:120px;pointer-events:none;z-index:9990;opacity:.5">
+    <svg width="120" height="120">
+      <polyline points="120,60 120,0 60,0" fill="none" stroke="#00ff88" stroke-width="1" />
+      <circle cx="120" cy="0" r="3" fill="#00ff88" />
+    </svg>
+  </div>
+  <div id="hud-bl"
+    style="position:fixed;bottom:0;left:0;width:120px;height:120px;pointer-events:none;z-index:9990;opacity:.5">
+    <svg width="120" height="120">
+      <polyline points="0,60 0,120 60,120" fill="none" stroke="#00ccff" stroke-width="1" />
+      <circle cx="0" cy="120" r="3" fill="#00ccff" />
+    </svg>
+  </div>
+  <div id="hud-br"
+    style="position:fixed;bottom:0;right:0;width:120px;height:120px;pointer-events:none;z-index:9990;opacity:.5">
+    <svg width="120" height="120">
+      <polyline points="120,60 120,120 60,120" fill="none" stroke="#00ff88" stroke-width="1" />
+      <circle cx="120" cy="120" r="3" fill="#00ff88" />
+    </svg>
+  </div>
+
+  <!-- BOTTOM STATUS BAR -->
+  <div id="status-bar"
+    style="position:fixed;bottom:0;left:0;right:0;height:22px;background:rgba(0,5,12,.97);border-top:1px solid #0d3055;z-index:9990;display:flex;align-items:center;padding:0 16px;gap:20px;pointer-events:none">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#3aaa80;letter-spacing:.5px" id="sb-time">
+    </div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#1a5040;letter-spacing:.5px">SYS:ONLINE
+    </div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#1a5040;letter-spacing:.5px">
+      NET:185.220.101.45</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#1a5040;letter-spacing:.5px">UPTIME:12D
+      04:32:17</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#3aaa80;letter-spacing:.5px" id="sb-cpu">
+      CPU:42%</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#3aaa80;letter-spacing:.5px" id="sb-ram">
+      RAM:6.2GB</div>
+    <div style="margin-left:auto;font-family:Orbitron,sans-serif;font-size:8px;color:#0d3055;letter-spacing:2px">
+      SERVERPANEL PRO v3.0 // SECURE CONNECTION // AES-256</div>
+  </div>
+
+  <script>
+    // ─── MATRIX RAIN ───
+    (function () {
+      const canvas = document.getElementById('matrix-bg');
+      const ctx = canvas.getContext('2d');
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
+      resize();
+      window.addEventListener('resize', resize);
+      const COLS = Math.floor(canvas.width / 14);
+      const drops = Array.from({ length: COLS }, () => Math.random() * -150);
+      const chars = '01アイウエオカキクケコサシスセソナニヌネノABCDEF0123456789><|/\\#@'.split('');
+      const speeds = Array.from({ length: COLS }, () => Math.random() * .5 + .2);
+      function draw() {
+        ctx.fillStyle = 'rgba(0,0,0,.06)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drops.forEach((y, i) => {
+          const bright = Math.random() > .92;
+          ctx.fillStyle = bright ? '#c8ffe8' : '#00ff88';
+          ctx.font = `${Math.floor(Math.random() * 3) + 10}px Share Tech Mono, monospace`;
+          ctx.globalAlpha = bright ? 0.9 : Math.random() * .4 + .1;
+          ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * 14, y * 14);
+          if (y * 14 > canvas.height && Math.random() > .975) drops[i] = 0;
+          drops[i] += speeds[i];
+        });
+        ctx.globalAlpha = 1;
+      }
+      setInterval(draw, 60);
+    })();
+
+    // ─── STATUS BAR CLOCK ───
+    function updateStatusBar() {
+      const now = new Date();
+      const t = now.toTimeString().slice(0, 8);
+      const el = document.getElementById('sb-time');
+      if (el) el.textContent = 'UTC+3 ' + t;
+      // random cpu/ram flicker
+      const cpu = document.getElementById('sb-cpu');
+      const ram = document.getElementById('sb-ram');
+      if (cpu) cpu.textContent = 'CPU:' + (38 + Math.floor(Math.random() * 12)) + '%';
+      if (ram) ram.textContent = 'RAM:' + (5.8 + Math.random() * .8).toFixed(1) + 'GB';
+    }
+    updateStatusBar();
+    setInterval(updateStatusBar, 1000);
+
+    // ─── RANDOM FLICKER ON CARDS ───
+    setInterval(() => {
+      const cards = document.querySelectorAll('.sc');
+      if (cards.length === 0) return;
+      const c = cards[Math.floor(Math.random() * cards.length)];
+      c.style.opacity = '.7';
+      setTimeout(() => c.style.opacity = '1', 60);
+    }, 4000);
+
+    // ─── HUD CORNER PULSE ───
+    setInterval(() => {
+      ['hud-tl', 'hud-tr', 'hud-bl', 'hud-br'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.opacity = Math.random() > .5 ? '.7' : '.35';
+      });
+    }, 2000);
+  </script>
+
+</body>
+
+</html>
